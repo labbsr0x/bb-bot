@@ -6,9 +6,9 @@ A repository to define a Telegram Bot for handling alerts emitted by a Big Broth
 
 1. Talk to Telegram's Bot Father, create your own bot and get it's Telegram Token;
 2. Open a Dialogflow account, create a new project and import the configs from the folder `bot/dialogflow`;
-3. Train your intents;
-4. Setup a Telegram integration with the Token obtained in `step 1`;
-5. Expose your `port 3001` and inform a reachable HTTPS address to the Dialogflow fulfillment configuration. We recommend using [ngrok](https://ngrok.com) for that; 
+3. Setup a Telegram integration on Dialogflow with the Token obtained in `step 1`;
+4. Send messages to your bot on telegram and then train your intents on Dialogflow website;
+5. Expose your `port 3000` and inform a reachable **HTTPS** address to the Dialogflow fulfillment configuration. We recommend using [ngrok](https://ngrok.com) for that; 
 6. Type the following commands in your terminal to interact with your bot directly through Telegram:
 
    ```bash
@@ -21,9 +21,7 @@ A repository to define a Telegram Bot for handling alerts emitted by a Big Broth
 
 The example client app `bb-promster` cluster will get registered to the **Big Brother's** ETCD and **Big Brother** will then start collecting metrics by federating it.
 
-Open your browser on `http://localhost:3000` to access the provided Grafana dashboard (user `bigbrother`, password `bigbrother`).
-
-Also, access `http://localhost:3001/test` on your browser to dispatch test alerts and see if you get them at your Telegram chat. 
+Also, access `http://localhost:3000/test` on your browser to dispatch test alerts and see if you get them at your Telegram chat. 
 
 # Big Brother
 

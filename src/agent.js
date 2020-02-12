@@ -145,9 +145,11 @@ function change(agent) {
  * @param res http response
  */
 function messageHandler(req, res) {
-    let agent = new WebhookClient({'request': req, 'response': res});
-    console.log("ORIGINAL REQUEST: " + agent.originalRequest);
-    agent.handleRequest(intentMap);
+    if (req.body.result || req.body.queryResult) {
+        let agent = new WebhookClient({'request': req, 'response': res});
+        console.log("ORIGINAL REQUEST: " + agent.originalRequest);
+        agent.handleRequest(intentMap);
+    }
 }
 
 /**
