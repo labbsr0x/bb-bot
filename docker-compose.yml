@@ -8,8 +8,11 @@ services:
       - ETCD_URLS=http://etcd:2379
       - TELEGRAM_TOKEN=<your telegram token>
       - DEBUG=*
+    volumes:
+      - ${PWD}/src:/app/src
+      - ${PWD}/test:/app/test
     ports:
-      - 3001:3000
+      - 3000:3000
 
   etcd:
     image: quay.io/coreos/etcd:v3.2.25
@@ -21,36 +24,19 @@ services:
 
   alertmanager:
     image: labbsr0x/big-brother-alertmanager
-    build:
-      dockerfile: Dockerfile
-      context: alertmanager
     ports:
       - 9093:9093
     environment:
-      - WEBHOOK_URL=http://bot:8080
+      - WEBHOOK_URL=http://bot:3000/alertmanager
     volumes:
       - alertmanager:/alertmanager
-
-  monitor:
-    image: labbsr0x/big-brother-monitor:latest
-    build:
-      dockerfile: Dockerfile
-      context: monitor
-    depends_on:
-      - example-bb-promster
-      - alertmanager
-      - etcd
-    ports:
-      - 9090:9090
-    environment:
-      - BB_PROMSTER_LEVEL=1
-      - ETCD_URLS=http://etcd:2379
-      - ALERT_MANAGER_URLS=alertmanager:9093
 
   # below is defined the example setup for metric consumption by big brother
 
   example-service:
     image: abilioesteves/metrics-generator:latest
+    depends_on:
+      - example-etcd
     ports:
       - 32865:32865
     environment:
@@ -72,43 +58,14 @@ services:
       - example-etcd
       - example-service
     ports:
-      - 9090
+      - 9091:9090
     environment:
       - REGISTRY_SERVICE=example-service
       - REGISTRY_ETCD_BASE=/metrics-generator
       - BB_PROMSTER_LEVEL=1
       - ETCD_URLS=http://example-etcd:2379
       - SCRAPE_ETCD_PATH=/metrics-generator/example-service
-
-  example-bb-promster-grafana:
-    image: labbsr0x/bb-promster:latest
-    depends_on:
-      - example-bb-promster
-    ports:
-      - 9091:9090
-    environment:
-      - REGISTRY_SERVICE=example
-      - REGISTRY_ETCD_BASE=/metrics-generator
-      - BB_PROMSTER_LEVEL=2
-      - ETCD_URLS=http://example-etcd:2379
-      - CLEAR_RR=true
-  
-  example-grafana:
-    image: labbsr0x/big-brother-grafana:latest
-    depends_on: 
-      - example-bb-promster
-    build:
-      context: grafana
-      dockerfile: Dockerfile
-    environment: 
-      - PROMETHEUS_URL=http://localhost:9091
-      - PROMETHEUS_ACCESS_TYPE=direct
-      - GF_SECURITY_ADMIN_USER=bigbrother
-      - GF_SECURITY_ADMIN_PASSWORD=bigbrother
-    depends_on:
-      - monitor
-    ports:
-      - 3000:3000
+      - ALERT_MANAGER_URLS=alertmanager:9093
 
 volumes:
   bot:
