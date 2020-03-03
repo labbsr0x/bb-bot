@@ -3,21 +3,57 @@ const { Etcd3 } = require('etcd3');
 
 const etcd = new Etcd3({hosts: ETCD_URLS});
 
+const SERVICE_BASE_URL = "/services"
+
 /**
  * Connects to ETCD and lists the apps being watched by Big Brother
  * @returns {Promise<string[]>}
  */
 function listApps() {
-    return etcd.getAll().prefix("/clients").keys().then((appss) => {
+    return etcd.getAll().prefix(`${SERVICE_BASE_URL}`).keys().then((appss) => {
         let apps = appss.map((sub) => { 
             let res = sub.split("/", 3); 
             return res.length === 3 ? res[res.length - 1] : undefined 
         })
-        apps = apps.filter(Boolean)
+        apps = apps.filter(app => !app.includes("promster") && app != "")
+        let uniqueApps = new Set(apps);
         return new Promise((resolve) => {
-            resolve(apps);
+            resolve([...uniqueApps]);
         });
     });
+}
+
+
+/**
+ * Connects to ETCD and lists the IPs from a app
+ * @returns {Promise<string[]>}
+ */
+function listIPs(app) {
+    return etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}`).keys().then((apps) => {
+        let ips = apps.map((app) => { 
+            let res = app.split("/", 4); 
+            return res.length === 4 ? res[res.length - 1] : undefined 
+        })
+        ips = ips.filter(Boolean)
+        let uniqueIps = new Set(ips);
+        return new Promise((resolve) => {
+            resolve([...ips]);
+        });
+    });
+}
+
+/**
+ * Adds a new ip to be watch by promster
+ * @param {String} app the service name
+ * @param {String} ip the app ip
+ * @returns {Promise<IPutResponse>}
+ */
+async function addIp(app, ip) {
+    let keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).keys();
+    if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
+        return etcd.put(`${SERVICE_BASE_URL}/${app}/${ip}`).value("").exec();
+    }
+    throw Error("Duplicated app")
 }
 
 /**
@@ -27,9 +63,9 @@ function listApps() {
  * @returns {Promise<IPutResponse>}
  */
 async function addApp(name, address) {
-    let keyExists = await etcd.getAll().prefix(`/clients/${name}/${address}`).keys();
+    let keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${name}/${address}`).keys();
     if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
-        return etcd.put(`/clients/${name}/${address}`).value("").exec();
+        return etcd.put(`${SERVICE_BASE_URL}/${name}/${address}`).value("").exec();
     }
     throw Error("Duplicated app")
 }
@@ -40,7 +76,7 @@ async function addApp(name, address) {
  * @returns {Promise<IDeleteRangeResponse>}
  */
 function rmApp(name) {
-    return etcd.delete().all().prefix(`/clients/${name}`).exec();
+    return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${name}`).exec();
 }
 
 /**
@@ -87,5 +123,7 @@ module.exports = {
     subscribeToApp,
     unsubscribeToApp,
     listSubscriptions,
+    listIPs,
+    addIp,
     etcd
 }

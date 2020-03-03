@@ -13,11 +13,11 @@ var assert = chai.assert;
 chai.should();
 
 describe('Testing db handles', () => {
-  afterEach(function() {
-    rmApp("teste1");
-    rmApp("teste2");
-    rmApp("teste3");
-    rmApp("teste4");
+  afterEach(async () => {
+    await rmApp("teste1");
+    await rmApp("teste2");
+    await rmApp("teste3");
+    await rmApp("teste4");
   });
   describe('addApp', async () => {
     it('should not return exception', async () => {
