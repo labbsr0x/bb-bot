@@ -34,37 +34,40 @@ services:
   # below is defined the example setup for metric consumption by big brother
 
   example-service:
-    image: abilioesteves/metrics-generator:latest
+    image: labbsr0x/metrics-generator-tabajara:latest
     depends_on:
-      - example-etcd
+      - etcd
     ports:
-      - 32865:32865
+      - 32865
     environment:
-      - REGISTRY_SERVICE=example-service
-      - REGISTRY_ETCD_BASE=/metrics-generator
-      - REGISTRY_ETCD_URL=http://example-etcd:2379
-  
-  example-etcd:
-    image: quay.io/coreos/etcd:v3.2.25
+      - COMPONENT_NAME=app2
+      - REGISTRY_SERVICE=app2
+      - REGISTRY_ETCD_URL=http://etcd:2379
+
+  example-service2:
+    image: labbsr0x/metrics-generator-tabajara:latest
+    depends_on:
+      - etcd
     ports:
-      - 2379
+      - 32865
     environment:
-      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
-      - ETCD_ADVERTISE_CLIENT_URLS=http://example-etcd:2379
+      - REGISTRY_SERVICE=app1
+      - COMPONENT_NAME=app1
+      - REGISTRY_ETCD_URL=http://etcd:2379
   
   example-bb-promster:
     image: labbsr0x/bb-promster:latest
     depends_on:
-      - example-etcd
+      - etcd
       - example-service
     ports:
       - 9091:9090
     environment:
-      - REGISTRY_SERVICE=example-service
-      - REGISTRY_ETCD_BASE=/metrics-generator
+      - REGISTRY_SERVICE=promster-app1
+      - REGISTRY_ETCD_BASE=/services
       - BB_PROMSTER_LEVEL=1
-      - ETCD_URLS=http://example-etcd:2379
-      - SCRAPE_ETCD_PATH=/metrics-generator/example-service
+      - ETCD_URLS=http://etcd:2379
+      - SCRAPE_ETCD_PATH=/services/app1
       - ALERT_MANAGER_URLS=alertmanager:9093
 
 volumes:

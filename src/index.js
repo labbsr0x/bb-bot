@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { messageHandler } = require('./agent');
 const { alert } = require('./alert');
-const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp } = require('./db');
+const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp, listIPs, addIp } = require('./db');
 const app = express();
 
 app.use(bodyParser.json());
@@ -51,6 +51,21 @@ app.post("/addApp", async (req, res) => {
     }
 })
 
+app.post("/removeApp", async (req, res) => {
+    console.log("add app")
+    try {
+        await rmApp(req.body.name)
+        res.status(200).json({
+            "status": "OK"
+        })
+    } catch (error) {
+        console.log("Cannot add app", error)
+        res.status(400).json({
+            "status": "Error"
+        })        
+    }
+})
+
 app.post("/test/alert", async (req, res) => {
     try {
         await alert(req.body.app, req.body.description)
@@ -78,6 +93,30 @@ app.post("/subscribe", async (req, res) => {
     await subscribeToApp(req.body.name, req.body.chatId)
     res.status(200).json({
         "status": "OK"
+    })
+})
+
+app.post("/add/ip", async (req, res) => {
+    console.log("add ip")
+    try {
+        await addIp(req.body.app, req.body.ip)
+        res.status(200).json({
+            "status": "OK"
+        })
+    } catch (err) {
+        console.debug("error", err)
+        res.status(400).json({
+            "status": "Err"
+        })
+    }
+})
+
+app.get("/listIps/:app", async (req, res) => {
+    console.log("list ips")
+    let ips = await listIPs(req.params.app)
+    res.status(200).json({
+        "status": "OK",
+        "result": ips
     })
 })
 
