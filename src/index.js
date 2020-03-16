@@ -2,11 +2,12 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors')
 const { messageHandler } = require('./agent');
 const { alert } = require('./alert');
-const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp, listIPs, addIp } = require('./db');
+const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp, listIPs, addIp, deleteIp } = require('./db');
 const app = express();
-
+app.use(cors());
 app.use(bodyParser.json());
 
 app.post("/", messageHandler);
@@ -84,7 +85,7 @@ app.get("/listApps", async (req, res) => {
     console.log("list app")
     let apps = await listApps()
     res.status(200).json({
-        "apps": apps
+        "result": apps
     })
 })
 
@@ -111,6 +112,21 @@ app.post("/add/ip", async (req, res) => {
     }
 })
 
+app.post("/remove/ip", async (req, res) => {
+    console.log("add ip")
+    try {
+        await deleteIp(req.body.app, req.body.ip)
+        res.status(200).json({
+            "status": "OK"
+        })
+    } catch (err) {
+        console.debug("error", err)
+        res.status(400).json({
+            "status": "Err"
+        })
+    }
+})
+
 app.get("/listIps/:app", async (req, res) => {
     console.log("list ips")
     let ips = await listIPs(req.params.app)
@@ -118,6 +134,31 @@ app.get("/listIps/:app", async (req, res) => {
         "status": "OK",
         "result": ips
     })
+})
+
+app.post("/generate/json", async (req, res) => {
+    try {
+        let ips = await listIPs(req.body.app)
+        let numberFiles = req.params.files 
+        let json = [
+            {
+                "targets": ips,
+                "labels": {}
+            }
+        ]
+        let data = JSON.stringify(json)
+        res.status(200)
+        res.setHeader('Content-disposition', 'attachment; filename= file001.json');
+        res.setHeader('Content-type', 'application/json');
+        res.write(data, function (err) {
+            res.end();
+        })
+    } catch (err) {
+        console.debug("error", err)
+        res.status(400).json({
+            "status": "Err"
+        })
+    }
 })
 
 // app.post("/", (req, res) => {
