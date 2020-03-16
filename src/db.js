@@ -31,13 +31,13 @@ function listApps() {
 function listIPs(app) {
     return etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}`).keys().then((apps) => {
         let ips = apps.map((app) => { 
-            let res = app.split("/", 4); 
-            return res.length === 4 ? res[res.length - 1] : undefined 
+            let res = app.split("/"); 
+            return res[res.length - 1] 
         })
         ips = ips.filter(Boolean)
         let uniqueIps = new Set(ips);
         return new Promise((resolve) => {
-            resolve([...ips]);
+            resolve([...uniqueIps]);
         });
     });
 }
@@ -54,6 +54,19 @@ async function addIp(app, ip) {
         return etcd.put(`${SERVICE_BASE_URL}/${app}/${ip}`).value("").exec();
     }
     throw Error("Duplicated app")
+}
+
+/**
+ * Delete a ip to etcd
+ * @param {String} app the service name
+ * @param {String} ip the app ip
+ * @returns {Promise<IPutResponse>}
+ */
+async function deleteIp(app, ip) {
+    let keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).keys();
+    if (keyExists || (Array.isArray(keyExists) && keyExists.length === 1)) {
+        return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).exec();
+    }
 }
 
 /**
@@ -125,5 +138,7 @@ module.exports = {
     listSubscriptions,
     listIPs,
     addIp,
+    deleteIp,
     etcd
+
 }
