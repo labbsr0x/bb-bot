@@ -68,7 +68,7 @@ function unsubscribe(agent) {
         let serviceName = agent.parameters.ServiceName;
         if (apps.length > 0) {
             if (serviceName) {
-                unsubscribeToApp(agent.originalRequest.payload.chat.from.id);
+                unsubscribeToApp(serviceName, agent.originalRequest.payload.chat.from.id);
                 agent.end(`Unsubscribed to service '${serviceName}'!`);
             } else {
                 agent.add("What is the name of the service you'd like to unsubscribe?");
