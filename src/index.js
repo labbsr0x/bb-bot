@@ -2,13 +2,22 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors')
+const cors = require('cors');
+const i18n = require('i18n');
 const { messageHandler } = require('./agent');
 const { alert } = require('./alert');
 const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp, listIPs, addIp, deleteIp } = require('./db');
 const app = express();
+
+i18n.configure({
+    directory: __dirname + '/locales',
+    defaultLocale: 'pt',
+    register: global
+});
+
 app.use(cors());
 app.use(bodyParser.json());
+app.use(i18n.init);
 
 app.post("/", messageHandler);
 
