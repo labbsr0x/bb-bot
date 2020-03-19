@@ -3,18 +3,25 @@
  */
 
 const { WebhookClient, Text, Card, Image, Suggestion, Payload } = require('dialogflow-fulfillment');
+const i18n = require('i18n');
 const { getTelegramButtons } = require('./misc');
 const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp } = require('./db');
 const intentMap = new Map();
 
+i18n.configure({
+    directory: __dirname + '/locales',
+    defaultLocale: 'pt',
+    register: global
+})
+
 const actions = [
-    "List all apps being monitored",
-    "Subscribe to alerts",
-    "Unsubscribe to alerts",
-    "Add a new app",
-    "Remove an app",
-    "Change an app's bb-promster address",
-    "Help with setting up my app observation cluster"
+    __("List all apps being monitored"),
+    __("Subscribe to alerts"),
+    __("Unsubscribe to alerts"),
+    __("Add a new app"),
+    __("Remove an app"),
+    __("Change an app's bb-promster address"),
+    __("Help with setting up my app observation cluster")
 ];
 
 /**
@@ -22,7 +29,7 @@ const actions = [
  * @param agent a dialogflow fulfillment webhook client
  */
 function welcome(agent){
-    agent.add(getTelegramButtons("Welcome to Big Brother! I'm responsible for taking care of your apps! Here's what you can do with me:", actions));
+    agent.add(getTelegramButtons(__("Welcome"), actions));
 }
 
 /**
