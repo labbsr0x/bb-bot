@@ -63,11 +63,11 @@ services:
     ports:
       - 9091:9090
     environment:
-      - REGISTRY_SERVICE=promster-app1
+      - REGISTRY_SERVICE=promster
       - REGISTRY_ETCD_BASE=/services
       - BB_PROMSTER_LEVEL=1
       - ETCD_URLS=http://etcd:2379
-      - SCRAPE_ETCD_PATH=/services/app1
+      - SCRAPE_ETCD_PATH=/services/
       - ALERT_MANAGER_URLS=alertmanager:9093
 
 volumes:
