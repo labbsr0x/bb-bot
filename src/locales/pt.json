@@ -1,3 +1,10 @@
 {
-    "Welcome": "Bem vindo"
+    "Welcome": "Bem-vindo ao Big Brother! Eu sou responsável por cuidar dos seus apps! Aqui está a lista de ações disponíveis:",
+    "List all apps being monitored": "Listar todos os apps sendo monitorados",
+    "Subscribe to alerts": "Inscrever para alertas",
+    "Unsubscribe to alerts": "Desinscrever para alertas",
+    "Add a new app": "Adicionar um novo app",
+    "Remove an app": "Remover um app",
+    "Change an app's bb-promster address": "Alterar o endereço bb-promster de um aplicativo",
+    "Help with setting up my app observation cluster": "Ajuda com a configuração do meu cluster de observação"
 }
