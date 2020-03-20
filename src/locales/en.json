@@ -9,13 +9,13 @@
     "Help with setting up my app observation cluster": "Help with setting up my app observation cluster",
     "Here is the list of apps I'm watching right now.\nClick one to subscribe:": "Here is the list of apps I'm watching right now.\nClick one to subscribe:",
     "At this moment, there are no apps being watched by me!": "At this moment, there are no apps being watched by me!",
-    "Subscribed to service '${serviceName}'": "Subscribed to service '${serviceName}'",
+    "Subscribed to service '%s'": "Subscribed to service '%s'",
     "Please select one of the options bellow:": "Please select one of the options bellow:",
     "There are no apps being monitored at this time": "There are no apps being monitored at this time",
-    "Unsubscribed to service '${serviceName}'!": "Unsubscribed to service '${serviceName}'!",
+    "Unsubscribed to service '%s'!": "Unsubscribed to service '%s'!",
     "What is the name of the service you'd like to unsubscribe?": "What is the name of the service you'd like to unsubscribe?",
-    "Service '${serviceName}' added!": "Service '${serviceName}' added!",
+    "Service '%s' added!": "Service '%s' added!",
     "What is the name of the service you'd like to add?": "What is the name of the service you'd like to add?",
     "What is the bb-promster of the service you'd like to add?": "What is the bb-promster of the service you'd like to add?",
-    "Stopped monitoring ${serviceName}": "Stopped monitoring ${serviceName}"
+    "Stopped monitoring '%s'": "Stopped monitoring '%s'"
 }
