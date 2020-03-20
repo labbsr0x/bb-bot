@@ -7,11 +7,12 @@ const i18n = require('i18n');
 const { messageHandler } = require('./agent');
 const { alert } = require('./alert');
 const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp, listIPs, addIp, deleteIp } = require('./db');
+const { LANGUAGE } = require('./environment')
 const app = express();
 
 i18n.configure({
     directory: __dirname + '/locales',
-    defaultLocale: 'pt',
+    defaultLocale: LANGUAGE,
     register: global
 });
 

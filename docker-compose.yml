@@ -8,6 +8,7 @@ services:
       - ETCD_URLS=http://etcd:2379
       - TELEGRAM_TOKEN=<your telegram token>
       - DEBUG=*
+      - LANGUAGE=en
     volumes:
       - ${PWD}/src:/app/src
       - ${PWD}/test:/app/test
@@ -17,7 +18,7 @@ services:
   etcd:
     image: quay.io/coreos/etcd:v3.2.25
     ports:
-      - 2379:2379
+      - 2380:2379
     environment:
       - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
       - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
@@ -61,7 +62,7 @@ services:
       - etcd
       - example-service
     ports:
-      - 9091:9090
+      - 9092:9090
     environment:
       - REGISTRY_SERVICE=promster
       - REGISTRY_ETCD_BASE=/services

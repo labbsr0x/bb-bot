@@ -6,11 +6,12 @@ const { WebhookClient, Text, Card, Image, Suggestion, Payload } = require('dialo
 const i18n = require('i18n');
 const { getTelegramButtons } = require('./misc');
 const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp } = require('./db');
+const { LANGUAGE } = require('./environment')
 const intentMap = new Map();
 
 i18n.configure({
     directory: __dirname + '/locales',
-    defaultLocale: 'pt',
+    defaultLocale: LANGUAGE,
     register: global
 })
 
