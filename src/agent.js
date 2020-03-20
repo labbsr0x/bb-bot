@@ -29,7 +29,7 @@ const actions = [
  * @param agent a dialogflow fulfillment webhook client
  */
 function welcome(agent){
-    agent.add(getTelegramButtons(__("Welcome"), actions));
+    agent.add(getTelegramButtons(__("Welcome to Big Brother! I'm responsible for taking care of your apps! Here's what you can do with me:"), actions));
 }
 
 /**
@@ -39,9 +39,9 @@ function welcome(agent){
 function list(agent) {
     return listApps().then((apps) => {
         if (apps.length > 0) {
-            agent.add(getTelegramButtons("Here is the list of apps I'm watching right now.\nClick one to subscribe:", apps, "Subscribe to "));
+            agent.add(getTelegramButtons(__("Here is the list of apps I'm watching right now.\nClick one to subscribe:"), apps, "Subscribe to "));
         } else {
-            agent.add("At this moment, there are no apps being watched by me!");
+            agent.add(__("At this moment, there are no apps being watched by me!"));
         }
     });
 }
@@ -55,13 +55,13 @@ function subscribe(agent) {
         let serviceName = agent.parameters.ServiceName;
         if (apps.length > 0) {
             if (serviceName) {
-                subscribeToApp(serviceName, agent.originalRequest.payload.chat.id);
-                agent.add(`Subscribed to service '${serviceName}'`);
+                subscribeToApp(serviceName, agent.originalRequest.payload.data.chat.id);
+                agent.add(__(`Subscribed to service '${serviceName}'`));
             } else {
-                agent.add(getTelegramButtons("Please select one of the options bellow:", apps, "Subscribe to "));
+                agent.add(getTelegramButtons(__("Please select one of the options bellow:"), apps, "Subscribe to "));
             }
         } else {
-            agent.add("There are no apps being monitored at this time");
+            agent.add(__("There are no apps being monitored at this time"));
         }
     });
 }
@@ -76,12 +76,12 @@ function unsubscribe(agent) {
         if (apps.length > 0) {
             if (serviceName) {
                 unsubscribeToApp(serviceName, agent.originalRequest.payload.chat.from.id);
-                agent.end(`Unsubscribed to service '${serviceName}'!`);
+                agent.end(__(`Unsubscribed to service '${serviceName}'!`));
             } else {
-                agent.add("What is the name of the service you'd like to unsubscribe?");
+                agent.add(__("What is the name of the service you'd like to unsubscribe?"));
             }
         } else {
-            agent.end("There are no apps being monitored");
+            agent.end(__("There are no apps being monitored at this time"));
         }
     });
 }
@@ -96,11 +96,11 @@ function add(agent) {
 
     if (serviceName && serviceURL) {
         addApp(serviceName, serviceURL);
-        agent.end(`Service '${serviceName}' added!`);
+        agent.end(__(`Service '${serviceName}' added!`));
     } else if (!serviceName) {
-        agent.add("What is the name of the service you'd like to add?");
+        agent.add(__("What is the name of the service you'd like to add?"));
     } else if (!serviceURL) {
-        agent.add("What is the bb-promster of the service you'd like to add?");
+        agent.add(__("What is the bb-promster of the service you'd like to add?"));
     }
 }
 
@@ -114,12 +114,12 @@ function remove(agent) {
         if (apps.length > 0) {
             if (serviceName) {
                 rmApp(serviceName);
-                agent.add(`Stopped monitoring ${serviceName}`);
+                agent.add(__(`Stopped monitoring ${serviceName}`));
             } else {
-                agent.add(getTelegramButtons("Please select one of the options bellow:", apps));
+                agent.add(getTelegramButtons(__("Please select one of the options bellow:"), apps));
             }
         } else {
-            agent.end("There are no apps being monitored");
+            agent.end(__("There are no apps being monitored at this time"));
         }
     });
 }
@@ -138,10 +138,10 @@ function change(agent) {
                 rmApp(serviceName);
                 addApp(serviceName, newServiceURL);
             } else if (!serviceName) {
-                agent.add(getTelegramButtons("Please select one of the options bellow:", apps));
+                agent.add(getTelegramButtons(__("Please select one of the options bellow:"), apps));
             }
         } else {
-            agent.end("There are no apps being monitored!");
+            agent.end(__("There are no apps being monitored at this time"));
         }
     })
 }
