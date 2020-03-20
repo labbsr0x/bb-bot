@@ -9,13 +9,13 @@
 	"Help with setting up my app observation cluster": "Ajuda com a configuração do meu cluster de observação",
 	"Here is the list of apps I'm watching right now.\nClick one to subscribe:": "Aqui está a lista de apps que estou obsservando.\nClique em um para se inscrever:",
 	"At this moment, there are no apps being watched by me!": "Nesse momento, não existem apps sendo monitorados por mim!",
-	"Subscribed to service '${serviceName}'": "Inscrito para o serviço '${serviceName}'",
+	"Subscribed to service '%s'": "Inscrito para o serviço '%s'",
     "Please select one of the options bellow:": "Por favor, selecione uma das opções abaixo:",
     "There are no apps being monitored at this time": "Não existem apps sendo monitorados",
-    "Unsubscribed to service '${serviceName}'!": "Desinscrito para o serviço '${serviceName}",
+    "Unsubscribed to service '%s'!": "Desinscrito para o serviço '%s'",
     "What is the name of the service you'd like to unsubscribe?": "Qual é o nome do serviço que você gostaria de se desinscrever?",
-    "Service '${serviceName}' added!": "Serviço '${serviceName}' adicionado!",
+    "Service '%s' added!": "Serviço '%s' adicionado!",
     "What is the name of the service you'd like to add?": "Qual o nome do serviço que você gostaria de adicionar?",
     "What is the bb-promster of the service you'd like to add?": "Qual é o bb-promster do serviço que você gostaria de adicionar?",
-    "Stopped monitoring ${serviceName}": "O serviço ${serviceName} parou de ser monitorado"
+    "Stopped monitoring '%s'": "O serviço '%s' parou de ser monitorado"
 }

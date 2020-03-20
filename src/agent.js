@@ -55,8 +55,8 @@ function subscribe(agent) {
         let serviceName = agent.parameters.ServiceName;
         if (apps.length > 0) {
             if (serviceName) {
-                subscribeToApp(serviceName, agent.originalRequest.payload.data.chat.id);
-                agent.add(__(`Subscribed to service '${serviceName}'`));
+                subscribeToApp(serviceName, agent.originalRequest.payload.chat.id);
+                agent.add(__("Subscribed to service '%s'", serviceName));
             } else {
                 agent.add(getTelegramButtons(__("Please select one of the options bellow:"), apps, "Subscribe to "));
             }
@@ -76,7 +76,7 @@ function unsubscribe(agent) {
         if (apps.length > 0) {
             if (serviceName) {
                 unsubscribeToApp(serviceName, agent.originalRequest.payload.chat.from.id);
-                agent.end(__(`Unsubscribed to service '${serviceName}'!`));
+                agent.end(__("Unsubscribed to service '%s'!", serviceName));
             } else {
                 agent.add(__("What is the name of the service you'd like to unsubscribe?"));
             }
@@ -96,7 +96,7 @@ function add(agent) {
 
     if (serviceName && serviceURL) {
         addApp(serviceName, serviceURL);
-        agent.end(__(`Service '${serviceName}' added!`));
+        agent.end(__("Service '%s' added!", serviceName));
     } else if (!serviceName) {
         agent.add(__("What is the name of the service you'd like to add?"));
     } else if (!serviceURL) {
@@ -114,7 +114,7 @@ function remove(agent) {
         if (apps.length > 0) {
             if (serviceName) {
                 rmApp(serviceName);
-                agent.add(__(`Stopped monitoring ${serviceName}`));
+                agent.add(__("Stopped monitoring '%s'", serviceName));
             } else {
                 agent.add(getTelegramButtons(__("Please select one of the options bellow:"), apps));
             }
