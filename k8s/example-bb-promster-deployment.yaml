@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.20.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: example-bb-promster
+  name: example-bb-promster
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.20.0 ()
+      creationTimestamp: null
+      labels:
+        io.kompose.service: example-bb-promster
+    spec:
+      containers:
+      - env:
+        - name: ALERT_MANAGER_URLS
+          value: alertmanager:9093
+        - name: BB_PROMSTER_LEVEL
+          value: "1"
+        - name: ETCD_URLS
+          value: http://etcd:2379
+        - name: REGISTRY_ETCD_BASE
+          value: /services
+        - name: REGISTRY_SERVICE
+          value: promster
+        - name: SCRAPE_ETCD_PATH
+          value: /services/
+        image: labbsr0x/bb-promster:latest
+        name: example-bb-promster
+        ports:
+        - containerPort: 9090
+        resources: {}
+      restartPolicy: Always
+status: {}
