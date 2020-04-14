@@ -4,23 +4,44 @@ const { Etcd3 } = require('etcd3');
 const etcd = new Etcd3({hosts: ETCD_URLS});
 
 const SERVICE_BASE_URL = "/services"
+const DESC_BASE_URL = "/desc"
+const VERSION_URL = '/version'
 
 /**
  * Connects to ETCD and lists the apps being watched by Big Brother
  * @returns {Promise<string[]>}
  */
-function listApps() {
-    return etcd.getAll().prefix(`${SERVICE_BASE_URL}`).keys().then((appss) => {
-        let apps = appss.map((sub) => { 
-            let res = sub.split("/", 3); 
-            return res.length === 3 ? res[res.length - 1] : undefined 
-        })
-        apps = apps.filter(app => !app.includes("promster") && app != "")
-        let uniqueApps = new Set(apps);
-        return new Promise((resolve) => {
-            resolve([...uniqueApps]);
-        });
-    });
+async function listApps(opts = {}) {
+    const descApp = 'descApp' in opts ? opts.descApp : false
+    let appss = await etcd.getAll().prefix(`${SERVICE_BASE_URL}`).keys()
+    let apps = appss.map((sub) => { 
+      let res = sub.split("/", 3); 
+      return res.length === 3 ? res[res.length - 1] : undefined 
+    })
+    apps = apps.filter(app => !app.includes("promster") && app != "")
+    let uniqueApps = new Set(apps);
+    let uApps = [...uniqueApps]
+    if (descApp) {
+      uApps = uApps.map(async (app) => {
+        desc = await etcd.getAll().prefix(`${DESC_BASE_URL}/${app}`).keys()
+        console.log('desc', desc, 'app name', app)
+        // return new Promise((resolve) => {
+        //   resolve({app: app, desc: desc})
+        // })
+        console.log('desc', desc[0])
+        if (desc.length) {
+          let res = desc[0].split("/", 4);
+          console.log('res', res)
+          desc = res.length === 4 ? res[res.length - 1] : ''
+        } else {
+          desc = ''
+        }
+        return {app: app, desc: desc}
+      })
+      let result = await Promise.all(uApps)
+      return result
+    }
+    return uApps
 }
 
 
@@ -84,6 +105,21 @@ async function addApp(name, address) {
 }
 
 /**
+ * Adds a new app to be watch by Big Brother
+ * @param {String} name the service name
+ * @param {String} address the bb-promster address
+ * @returns {Promise<IPutResponse>}
+ */
+async function addDescApp(name, desc) {
+  let keyExists = await etcd.getAll().prefix(`${DESC_BASE_URL}/${name}/${desc}`).keys();
+  if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
+      return etcd.put(`${DESC_BASE_URL}/${name}/${desc}`).value("").exec();
+  }
+  throw Error("Duplicated app")
+}
+
+
+/**
  * Stops the monitoring of the application by Big Brother
  * @param {String} name the name of the application to be removed
  * @returns {Promise<IDeleteRangeResponse>}
@@ -129,6 +165,38 @@ function listSubscriptions(name) {
     });
 }
 
+/**
+ * Stores an app version for a given env. ex: dev, prod, etc.
+ * @param {String} app the name of the app to add version
+ * @param {String} env the env name
+ * @param {String} version the version number
+ * @returns {Promise<IPutResponse>}
+ */
+function addVersionToApp(app, env, version) {
+  return etcd.put(`${VERSION_URL}/${app}/${env}/${version}`).value("").exec();
+}
+
+/**
+ * List all app versions by env
+ * @param {String} app the name of the app to add version
+ * @param {String} env the env name
+ * @returns {Promise<IPutResponse>}
+ */
+async function listVersions(app, env=null) {
+  let search = `${VERSION_URL}/${app}`
+  search = env ? `${VERSION_URL}/${app}/${env}` : search
+  let versionsKeys = await etcd.getAll().prefix(search).keys()
+  let versions = versionsKeys.map((version) => { 
+    let res = version.split("/");
+    let envName = res[res.length - 2]
+    return {envName: res[res.length - 1]}
+  })
+  return new Promise((resolve) => {
+      resolve(versions);
+  });
+  
+}
+
 module.exports = {
     listApps,
     addApp,
@@ -139,6 +207,9 @@ module.exports = {
     listIPs,
     addIp,
     deleteIp,
+    addDescApp,
+    addVersionToApp,
+    listVersions,
     etcd
 
 }

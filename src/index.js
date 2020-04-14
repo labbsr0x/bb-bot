@@ -6,7 +6,7 @@ const cors = require('cors');
 const i18n = require('i18n');
 const { messageHandler } = require('./agent');
 const { alert } = require('./alert');
-const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp, listIPs, addIp, deleteIp } = require('./db');
+const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp, listIPs, addIp, deleteIp, addDescApp } = require('./db');
 const { LANGUAGE } = require('./environment')
 const app = express();
 
@@ -51,6 +51,9 @@ app.post("/addApp", async (req, res) => {
     console.log("add app")
     try {
         await addApp(req.body.name, req.body.address)
+        if ('desc' in req.body) {
+          await addDescApp(req.body.name, req.body.desc)
+        }
         res.status(200).json({
             "status": "OK"
         })
@@ -93,7 +96,8 @@ app.post("/test/alert", async (req, res) => {
 
 app.get("/listApps", async (req, res) => {
     console.log("list app")
-    let apps = await listApps()
+    console.log('query', req.query)
+    let apps = await listApps(req.query)
     res.status(200).json({
         "result": apps
     })
