@@ -123,8 +123,9 @@ export async function addDescApp(name, desc) {
  * @param {String} name the name of the application to be removed
  * @returns {Promise<IDeleteRangeResponse>}
  */
-export function rmApp(name) {
-    return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${name}`).exec();
+export function rmApp(app) {
+    etcd.delete().all().prefix(`${DESC_BASE_URL}/${app}`).exec();
+    return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}`).exec();
 }
 
 /**
