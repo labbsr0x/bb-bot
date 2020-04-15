@@ -1,8 +1,8 @@
 const sinon = require('sinon');
-const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp, listSubscriptions, etcd} = require('../src/db');
 var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
-import db from '../dist-server/db'
+import * as db from '../dist-server/db'
+
 
 chai.use(chaiAsPromised);
  
@@ -34,12 +34,12 @@ describe('Testing db handles', () => {
   });
   describe('subscribeToApp', async () => {
     it('should not return exception', async () => {
-      return Promise.resolve(subscribeToApp(`teste`, `12214545`)).should.be.fulfilled;
+      return Promise.resolve(db.subscribeToApp(`teste`, `12214545`)).should.be.fulfilled;
     });
   });
   describe('subscribeToApp', async () => {
     it('should return chatIds from subscriptions', async () => {
-      return assert.eventually.equal(Promise.resolve(listSubscriptions("teste")), '12214545');
+      return assert.eventually.equal(Promise.resolve(db.listSubscriptions("teste")), '12214545');
       // return Promise.resolve(listSubscriptions("teste")).should.eventually.equal(['12214545']);
     });
   });
@@ -55,7 +55,7 @@ describe('Testing db handles', () => {
   });
   describe('listApps', async () => {
     it('should list the apps', async () => {
-      await addApp(`teste3`, `http://teste.com`);
+      await db.addApp(`teste3`, `http://teste.com`);
       return assert.eventually.equal(db.listApps(), 'teste3');
       // return Promise.resolve(listApps()).should.eventually.equal([ 'teste' ]);
     });
