@@ -7,6 +7,11 @@ const SERVICE_BASE_URL = "/services"
 const DESC_BASE_URL = "/desc"
 const VERSION_URL = '/version'
 
+function sliceByIndex(string, index = -1, separator="/") {
+  let res = string.split(separator, index); 
+  return index <= 0 ? res[res.length - 1] : res.length === index ? res[res.length - 1] : '' 
+}
+
 /**
  * Connects to ETCD and lists the apps being watched by Big Brother
  * @returns {Promise<string[]>}
@@ -14,10 +19,7 @@ const VERSION_URL = '/version'
 export async function listApps(opts = {}) {
     const descApp = 'descApp' in opts ? opts.descApp : false
     let appss = await etcd.getAll().prefix(`${SERVICE_BASE_URL}`).keys()
-    let apps = appss.map((sub) => { 
-      let res = sub.split("/", 3); 
-      return res.length === 3 ? res[res.length - 1] : undefined 
-    })
+    let apps = appss.map((sub) => sliceByIndex(sub, 3))
     apps = apps.filter(app => !app.includes("promster") && app != "")
     let uniqueApps = new Set(apps);
     let uApps = [...uniqueApps]
@@ -51,10 +53,7 @@ export async function listApps(opts = {}) {
  */
 export function listIPs(app) {
     return etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}`).keys().then((apps) => {
-        let ips = apps.map((app) => { 
-            let res = app.split("/"); 
-            return res[res.length - 1] 
-        })
+        let ips = apps.map((app) => sliceByIndex(app))
         ips = ips.filter(Boolean)
         let uniqueIps = new Set(ips);
         return new Promise((resolve) => {
@@ -155,10 +154,7 @@ export function unsubscribeToApp(name, chatId) {
  */
 export function listSubscriptions(name) {
     return etcd.getAll().prefix(`/subscriptions/${name}`).keys().then((subss) => {
-        let chats = subss.map((sub) => { 
-            let res = sub.split("/"); 
-            return res[res.length - 1] 
-        })
+        let chats = subss.map((sub) => sliceByIndex(sub))
         return new Promise((resolve) => {
             resolve(chats);
         });
