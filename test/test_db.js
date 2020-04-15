@@ -2,6 +2,7 @@ const sinon = require('sinon');
 const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp, listSubscriptions, etcd} = require('../src/db');
 var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
+import db from '../dist-server/db'
 
 chai.use(chaiAsPromised);
  
@@ -14,21 +15,21 @@ chai.should();
 
 describe('Testing db handles', () => {
   afterEach(async () => {
-    await rmApp("teste1");
-    await rmApp("teste2");
-    await rmApp("teste3");
-    await rmApp("teste4");
+    console.log('removing')
+    await db.rmApp("teste1");
+    await db.rmApp("teste2");
+    await db.rmApp("teste3");
+    await db.rmApp("teste4");
   });
   describe('addApp', async () => {
     it('should not return exception', async () => {
-      return Promise.resolve(addApp(`teste1`, `http://teste.com`)).should.be.fulfilled;
-      
+      return Promise.resolve(db.addApp(`teste1`, `http://teste.com`)).should.be.fulfilled;
     });
   });
   describe('addApp error', async () => {
     it('should return an exception', async () => {
-      await addApp(`teste2`, `http://teste.com`);
-      return Promise.resolve(addApp(`teste2`, `http://teste.com`)).should.rejectedWith(Error);
+      await db.addApp(`teste2`, `http://teste.com`);
+      return Promise.resolve(db.addApp(`teste2`, `http://teste.com`)).should.rejectedWith(Error);
     });
   });
   describe('subscribeToApp', async () => {
@@ -44,26 +45,26 @@ describe('Testing db handles', () => {
   });
   describe('unsubscribeToApp', async () => {
     it('should not return exception', async () => {
-      return Promise.resolve(unsubscribeToApp(`teste`, `12214545`)).should.be.fulfilled;
+      return Promise.resolve(db.unsubscribeToApp(`teste`, `12214545`)).should.be.fulfilled;
     });
   });
   describe('rmApp', async () => {
     it('should exclude the app', async () => {
-      return Promise.resolve(rmApp(`teste`)).should.be.fulfilled;
+      return Promise.resolve(db.rmApp(`teste`)).should.be.fulfilled;
     });
   });
   describe('listApps', async () => {
     it('should list the apps', async () => {
       await addApp(`teste3`, `http://teste.com`);
-      return assert.eventually.equal(listApps(), 'teste3');
+      return assert.eventually.equal(db.listApps(), 'teste3');
       // return Promise.resolve(listApps()).should.eventually.equal([ 'teste' ]);
     });
   });
   describe('listApps error', async () => {
     it('should not list empty app name', async () => {
-      await addApp(`teste4`, `http://teste.com`);
-      await addApp(``, ``);
-      return assert.eventually.equal(listApps(), 'teste4');
+      await db.addApp(`teste4`, `http://teste.com`);
+      await db.addApp(``, ``);
+      return assert.eventually.equal(db.listApps(), 'teste4');
       // return Promise.resolve(listApps()).should.eventually.equal([ 'teste' ]);
     });
   });

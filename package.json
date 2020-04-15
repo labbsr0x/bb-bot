@@ -11,7 +11,7 @@
     "server": "node ./dist-server/",
     "start": "nodemon dist-server/index.js",
     "build": "npm-run-all clean transpile",
-    "test": "mocha",
+    "test": "mocha --require @babel/register",
     "watch:dev": "nodemon"
   },
   "nodemonConfig": {

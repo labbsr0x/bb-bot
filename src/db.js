@@ -49,7 +49,7 @@ export async function listApps(opts = {}) {
  * Connects to ETCD and lists the IPs from a app
  * @returns {Promise<string[]>}
  */
-function listIPs(app) {
+export function listIPs(app) {
     return etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}`).keys().then((apps) => {
         let ips = apps.map((app) => { 
             let res = app.split("/"); 
@@ -69,7 +69,7 @@ function listIPs(app) {
  * @param {String} ip the app ip
  * @returns {Promise<IPutResponse>}
  */
-async function addIp(app, ip) {
+export async function addIp(app, ip) {
     let keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).keys();
     if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
         return etcd.put(`${SERVICE_BASE_URL}/${app}/${ip}`).value("").exec();
@@ -83,7 +83,7 @@ async function addIp(app, ip) {
  * @param {String} ip the app ip
  * @returns {Promise<IPutResponse>}
  */
-async function deleteIp(app, ip) {
+export async function deleteIp(app, ip) {
     let keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).keys();
     if (keyExists || (Array.isArray(keyExists) && keyExists.length === 1)) {
         return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).exec();
@@ -96,7 +96,7 @@ async function deleteIp(app, ip) {
  * @param {String} address the bb-promster address
  * @returns {Promise<IPutResponse>}
  */
-async function addApp(name, address) {
+export async function addApp(name, address) {
     let keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${name}/${address}`).keys();
     if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
         return etcd.put(`${SERVICE_BASE_URL}/${name}/${address}`).value("").exec();
@@ -110,7 +110,7 @@ async function addApp(name, address) {
  * @param {String} address the bb-promster address
  * @returns {Promise<IPutResponse>}
  */
-async function addDescApp(name, desc) {
+export async function addDescApp(name, desc) {
   let keyExists = await etcd.getAll().prefix(`${DESC_BASE_URL}/${name}/${desc}`).keys();
   if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
       return etcd.put(`${DESC_BASE_URL}/${name}/${desc}`).value("").exec();
@@ -124,7 +124,7 @@ async function addDescApp(name, desc) {
  * @param {String} name the name of the application to be removed
  * @returns {Promise<IDeleteRangeResponse>}
  */
-function rmApp(name) {
+export function rmApp(name) {
     return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${name}`).exec();
 }
 
@@ -134,7 +134,7 @@ function rmApp(name) {
  * @param {String} chatId the id of the chat identifying which chat wants to subscribe to the app identified by name
  * @returns {Promise<IPutResponse>}
  */
-function subscribeToApp(name, chatId) {
+export function subscribeToApp(name, chatId) {
     return etcd.put(`/subscriptions/${name}/${chatId}`).value("").exec();
 }
 
@@ -144,7 +144,7 @@ function subscribeToApp(name, chatId) {
  * @param {Stirng} chatId the id of the chat identifying which chat wants to unsubscribe to the app identified by name
  * @returns {Promise<IDeleteRangeResponse>}
  */
-function unsubscribeToApp(name, chatId) {
+export function unsubscribeToApp(name, chatId) {
     return etcd.delete().all().prefix(`/subscriptions/${name}/${chatId}`).exec();
 }
 
@@ -153,7 +153,7 @@ function unsubscribeToApp(name, chatId) {
  * @param {String} name the name of the app to subscribe to
  * @returns {Promise<string[]>}
  */
-function listSubscriptions(name) {
+export function listSubscriptions(name) {
     return etcd.getAll().prefix(`/subscriptions/${name}`).keys().then((subss) => {
         let chats = subss.map((sub) => { 
             let res = sub.split("/"); 
