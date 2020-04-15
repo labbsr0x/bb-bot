@@ -11,7 +11,7 @@ const VERSION_URL = '/version'
  * Connects to ETCD and lists the apps being watched by Big Brother
  * @returns {Promise<string[]>}
  */
-async function listApps(opts = {}) {
+export async function listApps(opts = {}) {
     const descApp = 'descApp' in opts ? opts.descApp : false
     let appss = await etcd.getAll().prefix(`${SERVICE_BASE_URL}`).keys()
     let apps = appss.map((sub) => { 
@@ -172,7 +172,7 @@ function listSubscriptions(name) {
  * @param {String} version the version number
  * @returns {Promise<IPutResponse>}
  */
-function addVersionToApp(app, env, version) {
+export function addVersionToApp(app, env, version) {
   return etcd.put(`${VERSION_URL}/${app}/${env}/${version}`).value("").exec();
 }
 
@@ -182,7 +182,7 @@ function addVersionToApp(app, env, version) {
  * @param {String} env the env name
  * @returns {Promise<IPutResponse>}
  */
-async function listVersions(app, env=null) {
+export async function listVersions(app, env=null) {
   let search = `${VERSION_URL}/${app}`
   search = env ? `${VERSION_URL}/${app}/${env}` : search
   let versionsKeys = await etcd.getAll().prefix(search).keys()
@@ -195,21 +195,4 @@ async function listVersions(app, env=null) {
       resolve(versions);
   });
   
-}
-
-module.exports = {
-    listApps,
-    addApp,
-    rmApp,
-    subscribeToApp,
-    unsubscribeToApp,
-    listSubscriptions,
-    listIPs,
-    addIp,
-    deleteIp,
-    addDescApp,
-    addVersionToApp,
-    listVersions,
-    etcd
-
 }

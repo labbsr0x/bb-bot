@@ -15,4 +15,4 @@ ENV ETCD_URLS ""
 ENV TELEGRAM_TOKEN ""
 
 # RUN
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "watch:dev" ]
