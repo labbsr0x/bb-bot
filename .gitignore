@@ -111,3 +111,5 @@ dist
 
 # macos
 .DS_Store
+
+dist-server/

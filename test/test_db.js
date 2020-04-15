@@ -20,6 +20,7 @@ describe('Testing db handles', () => {
     await db.rmApp("teste2");
     await db.rmApp("teste3");
     await db.rmApp("teste4");
+    await db.rmApp("");
   });
   describe('addApp', async () => {
     it('should not return exception', async () => {
