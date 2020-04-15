@@ -5,8 +5,25 @@
   "main": "src/index.js",
   "scripts": {
     "debug": "node $NODE_DEBUG_OPTION src/index.js -r @babel/register",
-    "start": "nodemon src/index.js",
-    "test": "mocha"
+    "transpile": "babel ./src --out-dir dist-server --copy-files",
+    "dev": "NODE_ENV=development npm-run-all build server",
+    "clean": "rimraf dist-server",
+    "server": "node ./dist-server/",
+    "start": "nodemon dist-server/index.js",
+    "build": "npm-run-all clean transpile",
+    "test": "mocha",
+    "watch:dev": "nodemon"
+  },
+  "nodemonConfig": {
+    "exec": "npm run dev",
+    "watch": [
+      "src/*"
+    ],
+    "ignore": [
+      "**/test/**",
+      "*.test.js",
+      "*.spec.js"
+    ]
   },
   "repository": {
     "type": "git",
@@ -20,8 +37,12 @@
   "author": "labbsr0x",
   "license": "MIT",
   "dependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/plugin-transform-runtime": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
     "actions-on-google": "^2.12.0",
     "axios": "^0.19.2",
+    "babel-polyfill": "^6.26.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dialogflow-fulfillment": "^0.6.0",
@@ -29,15 +50,23 @@
     "express": "^4.17.1",
     "grpc": "^1.24.2",
     "https": "^1.0.0",
-    "i18n": "0.8.6"
+    "i18n": "0.8.6",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.2",
+    "@babel/core": "^7.9.0",
     "@babel/register": "^7.6.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "mocha": "^7.0.1",
     "nodemon": "^2.0.2",
     "sinon": "^8.1.1"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": ["@babel/plugin-transform-runtime"]
   }
 }

@@ -147,7 +147,7 @@ app.get("/listIps/:app", async (req, res) => {
     res.status(200).json({
         "status": "OK",
         "result": ips
-    })
+    }) 
 })
 
 app.post("/generate/json", async (req, res) => {
