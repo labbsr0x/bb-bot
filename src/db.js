@@ -182,13 +182,13 @@ export async function listVersions(app, env=null) {
   let search = `${VERSION_URL}/${app}`
   search = env ? `${VERSION_URL}/${app}/${env}` : search
   let versionsKeys = await etcd.getAll().prefix(search).keys()
-  let versions = versionsKeys.map((version) => { 
+  let versions = versionsKeys.reduce((obj, version) => { 
     let res = version.split("/");
     let envName = res[res.length - 2]
-    return {envName: res[res.length - 1]}
-  })
+    obj[envName] = res[res.length - 1]
+    return obj
+  }, {})
   return new Promise((resolve) => {
       resolve(versions);
   });
-  
 }

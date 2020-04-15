@@ -68,4 +68,17 @@ describe('Testing db handles', () => {
       // return Promise.resolve(listApps()).should.eventually.equal([ 'teste' ]);
     });
   });
+  describe('addVersion', async () => {
+    it('should not return exception', async () => {
+      return Promise.resolve(db.addVersionToApp(`teste1`, 'prod', 'v0.1.0')).should.be.fulfilled;
+    });
+  });
+  describe('listVersions', async () => {
+    it('should list the apps', async () => {
+      await db.addVersionToApp(`teste2`, 'prod', 'v0.1.0');
+      await db.addVersionToApp(`teste2`, 'dev', 'v0.0.9');
+      console.log('list version', db.listVersions('teste2'))
+      return assert.eventually.deepEqual(db.listVersions('teste2'), {'prod': 'v0.1.0', 'dev': 'v0.0.9'});
+    });
+  });
 });
