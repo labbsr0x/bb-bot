@@ -25,7 +25,7 @@ export async function listApps(opts = {}) {
     let uApps = [...uniqueApps]
     if (descApp) {
       uApps = uApps.map(async (app) => {
-        desc = await etcd.getAll().prefix(`${DESC_BASE_URL}/${app}`).keys()
+        let desc = await etcd.getAll().prefix(`${DESC_BASE_URL}/${app}`).keys()
         if (desc.length) {
           let res = desc[0].split("/", 4);
           desc = res.length === 4 ? res[res.length - 1] : ''
