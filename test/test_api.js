@@ -65,6 +65,19 @@ describe('Testing API handles', () => {
               res.body.status.should.be.eql("OK");
         });
     });
+    it('should list the apps with desc', async () => {
+      await db.addApp(`teste2`, `http://teste.com`);
+      chai.request(app)
+        .get('/list/apps?descApp=true')
+        .set('Content-Type', 'application/json')
+        .send()
+        .end((err, res) => {
+              res.should.have.status(200);
+              res.body.should.be.a('object');
+              res.body.should.have.property('status');
+              res.body.status.should.be.eql("OK");
+        });
+    });
     it('Should remove a app', async () => {
       await db.addApp(`teste1`, `http://teste.com`);
       chai.request(app)
