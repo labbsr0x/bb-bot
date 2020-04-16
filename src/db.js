@@ -26,14 +26,8 @@ export async function listApps(opts = {}) {
     if (descApp) {
       uApps = uApps.map(async (app) => {
         desc = await etcd.getAll().prefix(`${DESC_BASE_URL}/${app}`).keys()
-        console.log('desc', desc, 'app name', app)
-        // return new Promise((resolve) => {
-        //   resolve({app: app, desc: desc})
-        // })
-        console.log('desc', desc[0])
         if (desc.length) {
           let res = desc[0].split("/", 4);
-          console.log('res', res)
           desc = res.length === 4 ? res[res.length - 1] : ''
         } else {
           desc = ''
@@ -114,7 +108,7 @@ export async function addDescApp(name, desc) {
   if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
       return etcd.put(`${DESC_BASE_URL}/${name}/${desc}`).value("").exec();
   }
-  throw Error("Duplicated app")
+  throw Error("Duplicated description")
 }
 
 
