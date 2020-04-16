@@ -6,7 +6,7 @@ const cors = require('cors');
 const i18n = require('i18n');
 const { messageHandler } = require('./agent');
 const { alert } = require('./alert');
-const { listApps, addApp, rmApp, subscribeToApp, unsubscribeToApp, listIPs, addIp, deleteIp, addDescApp } = require('./db');
+import * as db from './db'
 const { LANGUAGE } = require('./environment')
 const app = express();
 
@@ -50,9 +50,9 @@ app.post("/alertmanager", async (req, res) => {
 app.post("/add/app", async (req, res) => {
     console.log("add app")
     try {
-        await addApp(req.body.name, req.body.address)
+        await db.addApp(req.body.name, req.body.address)
         if ('desc' in req.body) {
-          await addDescApp(req.body.name, req.body.desc)
+          await db.addDescApp(req.body.name, req.body.desc)
         }
         res.status(200).json({
             "status": "OK"
@@ -68,7 +68,7 @@ app.post("/add/app", async (req, res) => {
 app.post("/remove/app", async (req, res) => {
     console.log("add app")
     try {
-        await rmApp(req.body.name)
+        await db.rmApp(req.body.name)
         res.status(200).json({
             "status": "OK"
         })
@@ -81,9 +81,7 @@ app.post("/remove/app", async (req, res) => {
 })
 
 app.get("/list/apps", async (req, res) => {
-  console.log("list app")
-  console.log('query', req.query)
-  let apps = await listApps(req.query)
+  let apps = await db.listApps(req.query)
   res.status(200).json({
       "status": "OK",
       "result": apps
@@ -106,7 +104,7 @@ app.post("/test/alert", async (req, res) => {
 
 app.post("/subscribe", async (req, res) => {
     console.log("list app")
-    await subscribeToApp(req.body.name, req.body.chatId)
+    await db.subscribeToApp(req.body.name, req.body.chatId)
     res.status(200).json({
         "status": "OK"
     })
@@ -115,7 +113,7 @@ app.post("/subscribe", async (req, res) => {
 app.post("/add/ip", async (req, res) => {
     console.log("add ip")
     try {
-        await addIp(req.body.app, req.body.ip)
+        await db.addIp(req.body.app, req.body.ip)
         res.status(200).json({
             "status": "OK"
         })
@@ -129,7 +127,7 @@ app.post("/add/ip", async (req, res) => {
 
 app.post("/remove/ip", async (req, res) => {
     try {
-        await deleteIp(req.body.app, req.body.ip)
+        await db.deleteIp(req.body.app, req.body.ip)
         res.status(200).json({
             "status": "OK"
         })
@@ -143,7 +141,7 @@ app.post("/remove/ip", async (req, res) => {
 
 app.get("/list/ips/:app", async (req, res) => {
     console.log("list ips")
-    let ips = await listIPs(req.params.app)
+    let ips = await db.listIPs(req.params.app)
     res.status(200).json({
         "status": "OK",
         "result": ips
@@ -152,7 +150,7 @@ app.get("/list/ips/:app", async (req, res) => {
 
 app.post("/generate/json", async (req, res) => {
     try {
-        let ips = await listIPs(req.body.app)
+        let ips = await db.listIPs(req.body.app)
         let numberFiles = req.params.files 
         let json = [
             {
@@ -176,20 +174,25 @@ app.post("/generate/json", async (req, res) => {
 })
 
 app.get("/list/version/:app", async (req, res) => {
-  let ips = await listIPs(req.params.app)
+  let versions = await db.listVersions(req.params.app)
   res.status(200).json({
       "status": "OK",
-      "result": ips
+      "result": versions
   }) 
 })
 
-app.get("/add/version/:app", async (req, res) => {
-  console.log("list ips")
-  let ips = await listIPs(req.params.app)
-  res.status(200).json({
-      "status": "OK",
-      "result": ips
-  }) 
+app.post("/add/version", async (req, res) => {
+    try {
+      await db.addVersionToApp(req.body.app, req.body.env, req.body.version)
+      res.status(200).json({
+          "status": "OK"
+      }) 
+    } catch (err) {
+      console.debug("error", err)
+      res.status(400).json({
+          "status": "Err"
+      })
+    }
 })
 
 export default app;
