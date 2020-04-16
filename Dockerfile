@@ -14,5 +14,7 @@ COPY . /app
 ENV ETCD_URLS ""
 ENV TELEGRAM_TOKEN ""
 
+RUN chmod +x run.sh
+
 # RUN
-CMD [ "npm", "run", "watch:dev" ]
+CMD ["sh", "-C", "run.sh"]

@@ -104,9 +104,9 @@ export async function addApp(name, address) {
 }
 
 /**
- * Adds a new app to be watch by Big Brother
- * @param {String} name the service name
- * @param {String} address the bb-promster address
+ * Adds a description for an app
+ * @param {String} name the app name
+ * @param {String} desc the desc of the app
  * @returns {Promise<IPutResponse>}
  */
 export async function addDescApp(name, desc) {
