@@ -13,6 +13,7 @@ COPY . /app
 # ENVS
 ENV ETCD_URLS ""
 ENV TELEGRAM_TOKEN ""
+ENV ENVIRONMENT "dev"
 
 RUN chmod +x run.sh
 
