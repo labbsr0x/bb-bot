@@ -4,9 +4,9 @@
   "description": "A diaglog flow bot for alerts",
   "main": "src/index.js",
   "scripts": {
-    "debug": "node $NODE_DEBUG_OPTION src/index.js -r @babel/register",
     "transpile": "babel ./src --out-dir dist-server --copy-files",
     "dev": "NODE_ENV=development npm-run-all build server",
+    "prod": "NODE_ENV=production npm-run-all build server",
     "clean": "rimraf dist-server",
     "server": "node ./dist-server/",
     "start": "nodemon dist-server/index.js",
