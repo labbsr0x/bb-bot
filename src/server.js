@@ -1,10 +1,4 @@
 'use strict';
-
-const openshiftRestClient = require('openshift-rest-client').OpenshiftClient;
-const { KubeConfig } = require('kubernetes-client')
-const Request = require('kubernetes-client/backends/request')
-const Client = require('kubernetes-client').Client
-const k8s = require('@kubernetes/client-node');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -13,7 +7,11 @@ const { messageHandler } = require('./agent');
 const { alert } = require('./alert');
 import * as db from './db'
 const { LANGUAGE } = require('./environment')
+import kbRouter from './routers/kbRouters'
+
 const app = express();
+
+
 
 i18n.configure({
     directory: __dirname + '/locales',
@@ -200,89 +198,6 @@ app.post("/add/version", async (req, res) => {
     }
 })
 
-app.get("/list/deployments", async (req, res) => {
-    const cluster = {
-        name: 'arq3.0',
-        server: 'http://caas.nuvem.bb.com.br/v3',
-    };
-
-    const user = {
-        name: 'c1313471',
-        password: '01281012',
-    };
-
-    const context = {
-        name: 'my-context',
-        user: user.name,
-        cluster: cluster.name,
-    };
-
-    const kc = new k8s.KubeConfig();
-    kc.loadFromOptions({
-        clusters: [cluster],
-        users: [user],
-        contexts: [context],
-        currentContext: context.name,
-    });
-    const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
-    k8sApi.listNamespacedPod('ath-barimetrics')
-    .then((res) => {
-	    console.log(res.body);
-    })
-    .catch((err) => {
-        console.log(err);
-    });
-    let apps = await db.listApps(req.query)
-    res.status(200).json({
-        "status": "OK",
-        "result": apps
-    })
-})
-
-app.get("/list/namespaces", async (req, res) => {
-    try {
-        const kubeconfig = new KubeConfig()
-
-        // kubeconfig.loadFromString(JSON.stringify(config))
-        kubeconfig.loadFromFile('/Users/gustavocoelho/projetos/bb-bot/src/config')
-        
-        const backend = new Request({ kubeconfig })
-        const client = new Client({backend, version: '1.13'})
-        const namespaces = await client.api.v1.namespaces.get()
-        console.log('namespace', namespaces);
-        res.status(200).json({
-            "status": "OK",
-            "result": namespaces
-        })
-    } catch (err) {
-        console.log('error', err)
-    }
-})
-
-app.get("/deploy/promster/:app", async (req, res) => {
-    try {
-        const kubeconfig = new KubeConfig()
-        kubeconfig.loadFromFile('/Users/gustavocoelho/projetos/bb-bot/src/config')
-
-        // kubeconfig.loadFromString(JSON.stringify(config))
-        const deploymentManifest = require('./deployments/bb-promster.json')
-        deploymentManifest.metadata.name = req.params.app
-        console.log('deployment', deploymentManifest)
-        const backend = new Request({ kubeconfig })
-        const client = new Client({backend, version: '1.13'})
-        const namespaces = await client.api.v1.namespaces.get()
-        console.log('namespace', namespaces);
-        
-        
-        await client.apis.apps.v1.namespaces('barimetrics').deployments.post({ body: deploymentManifest })
-        const deployment = await client.apis.apps.v1.namespaces('default').deployments(deploymentManifest.metadata.name).get()
-        res.status(200).json({
-            "status": "OK",
-            "result": deployment
-        })
-    } catch (err) {
-        console.log('error', err)
-    }
-})
+app.use('/kb', kbRouter)
 
 export default app;
