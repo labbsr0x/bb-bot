@@ -1,0 +1,77 @@
+{
+    "kind": "DeploymentConfig",
+    "apiVersion": "v1",
+    "metadata": {
+      "name": ""
+    },
+    "spec": {
+      "template": {
+        "metadata": {
+          "labels": {
+            "name": ""
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "",
+              "image": "",
+              "env": [
+                {
+                  "name": "ETCD_URLS",
+                  "value": "etcd-bot.barimetrics-etcd.svc:2379"
+                },
+                {
+                  "name": "REGISTRY_SERVICE",
+                  "value": "pil-crm-cadastro-fornecedor-api"
+                },
+                {
+                  "name": "REGISTRY_ETCD_BASE",
+                  "value": "/services"
+                },
+                {
+                  "name": "BB_PROMSTER_LEVEL",
+                  "value": "1"
+                },
+                {
+                  "name": "SCRAPE_ETCD_PATH",
+                  "value": "/services/pil-crm-cadastro-fornecedor-api"
+                }
+              ],
+              "ports": [
+                {
+                  "containerPort": 9090,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "replicas": 1,
+      "triggers": [
+        {
+          "type": "ConfigChange"
+        },
+        {
+          "type": "ImageChange",
+          "imageChangeParams": {
+            "automatic": true,
+            "containerNames": [
+              "bb-promster-teste"
+            ],
+            "from": {
+              "kind": "ImageStreamTag",
+              "name": "bb-promster:latest"
+            }
+          }
+        }
+      ],
+      "strategy": {
+        "type": "Rolling"
+      },
+      "paused": false,
+      "revisionHistoryLimit": 2,
+      "minReadySeconds": 0
+    }
+  }
