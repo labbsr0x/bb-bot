@@ -1,77 +1,74 @@
 {
-    "kind": "DeploymentConfig",
-    "apiVersion": "v1",
-    "metadata": {
-      "name": ""
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "name": "test-bb-promster-example"
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {
+      "matchLabels": {
+        "name": "test-bb-promster-example"
+      }
     },
-    "spec": {
-      "template": {
-        "metadata": {
-          "labels": {
-            "name": ""
-          }
-        },
-        "spec": {
-          "containers": [
-            {
-              "name": "",
-              "image": "",
-              "env": [
-                {
-                  "name": "ETCD_URLS",
-                  "value": "etcd-bot.barimetrics-etcd.svc:2379"
-                },
-                {
-                  "name": "REGISTRY_SERVICE",
-                  "value": "pil-crm-cadastro-fornecedor-api"
-                },
-                {
-                  "name": "REGISTRY_ETCD_BASE",
-                  "value": "/services"
-                },
-                {
-                  "name": "BB_PROMSTER_LEVEL",
-                  "value": "1"
-                },
-                {
-                  "name": "SCRAPE_ETCD_PATH",
-                  "value": "/services/pil-crm-cadastro-fornecedor-api"
-                }
-              ],
-              "ports": [
-                {
-                  "containerPort": 9090,
-                  "protocol": "TCP"
-                }
-              ]
-            }
-          ]
+    "template": {
+      "metadata": {
+        "labels": {
+          "name": "test-bb-promster-example"
         }
       },
-      "replicas": 1,
-      "triggers": [
-        {
-          "type": "ConfigChange"
-        },
-        {
-          "type": "ImageChange",
-          "imageChangeParams": {
-            "automatic": true,
-            "containerNames": [
-              "bb-promster-teste"
+      "spec": {
+        "containers": [
+          {
+            "name": "test-bb-promster-example",
+            "image": "labbsr0x/bb-promster:latest",
+            "env": [
+              {
+                "name": "REGISTRY_ETCD_URL",
+                "value": "http://etcd.default.svc.cluster.local:2379"
+              },
+              {
+                "name": "REGISTRY_SERVICE",
+                "value": "example"
+              },
+              {
+                "name": "REGISTRY_ETCD_BASE",
+                "value": "/services"
+              },
+              {
+                "name": "REGISTRY_SERVICE",
+                "value": "example"
+              },
+              {
+                "name": "REGISTRY_ETCD_BASE",
+                "value": "/services"
+              },
+              {
+                "name": "BB_PROMSTER_LEVEL",
+                "value": "1"
+              },
+              {
+                "name": "ETCD_URLS",
+                "value": "http://etcd.default.svc.cluster.local:2379"
+              },
+              {
+                "name": "SCRAPE_ETCD_PATH",
+                "value": "/services/example"
+              },
+              {
+                "name": "REMOTE_WRITE_URL",
+                "value": "http://nginx.cortex.svc.cluster.local/api/prom/push"
+              }
             ],
-            "from": {
-              "kind": "ImageStreamTag",
-              "name": "bb-promster:latest"
-            }
+            "imagePullPolicy": "IfNotPresent",
+            "ports": [
+              {
+                "containerPort": 9090
+              }
+            ]
           }
-        }
-      ],
-      "strategy": {
-        "type": "Rolling"
-      },
-      "paused": false,
-      "revisionHistoryLimit": 2,
-      "minReadySeconds": 0
+        ]
+      }
     }
   }
+}
