@@ -4,13 +4,16 @@
   "description": "A diaglog flow bot for alerts",
   "main": "src/index.js",
   "scripts": {
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build:types": "tsc",
     "transpile": "babel ./src --out-dir dist-server --copy-files",
     "dev": "NODE_ENV=development npm-run-all build server",
     "prod": "NODE_ENV=production npm-run-all build server",
     "clean": "rimraf dist-server",
     "server": "node ./dist-server/",
     "start": "nodemon dist-server/index.js",
-    "build": "npm-run-all clean transpile",
+    "build": "npm-run-all clean build:types transpile",
     "test": "mocha --require @babel/register",
     "watch:dev": "nodemon"
   },
@@ -58,20 +61,25 @@
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/preset-typescript": "^7.9.0",
     "@babel/register": "^7.6.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-http": "^4.3.0",
     "mocha": "^7.0.1",
     "nodemon": "^2.0.2",
-    "sinon": "^8.1.1"
+    "sinon": "^8.1.1",
+    "typescript": "^3.8.3"
   },
   "babel": {
     "presets": [
-      "@babel/preset-env"
+      "@babel/preset-env",
+      "@babel/typescript"
     ],
     "plugins": [
-      "@babel/plugin-transform-runtime"
+      "@babel/plugin-transform-runtime",
+      "@babel/proposal-class-properties"
     ]
   }
 }

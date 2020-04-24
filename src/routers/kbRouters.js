@@ -1,4 +1,7 @@
 import express from 'express'
+import {App} from '../types/App'
+import {Settings} from '../types/Settings'
+
 const util = require('util')
 const { KB_CONFIG } = require('../environment');
 const { KubeConfig } = require('kubernetes-client')
@@ -27,68 +30,24 @@ router.get("/list/namespaces", async (req, res) => {
   }
 })
 
-router.get("/deploy/promster/:app", async (req, res) => {
+router.post("/deploy/promster", async (req, res) => {
   try {
       const kubeconfig = new KubeConfig()
       kubeconfig.loadFromFile(KB_CONFIG)
 
       // kubeconfig.loadFromString(JSON.stringify(config))
-      const deploymentManifest = require('./deployments/bb-promster.json')
-      let deploy = {...deploymentManifest}
-      let etcdService = "http://etcd.barimetrics.svc.cluster.local:2379"
-      let envVars = [
-        {
-          "name": "REGISTRY_ETCD_URL",
-          "value": etcdService
-        },
-        {
-          "name": "REGISTRY_SERVICE",
-          "value": req.params.app
-        },
-        {
-          "name": "REGISTRY_ETCD_BASE",
-          "value": "/services"
-        },
-        {
-          "name": "REGISTRY_ETCD_BASE",
-          "value": "/services"
-        },
-        {
-          "name": "BB_PROMSTER_LEVEL",
-          "value": "1"
-        },
-        {
-          "name": "ETCD_URLS",
-          "value": etcdService
-        },
-        {
-          "name": "SCRAPE_ETCD_PATH",
-          "value": `/services/${req.params.app}`
-        },
-      ]
-      let remoteWrite = false
-      if (remoteWrite) {
-        envVars.push({
-          "name": "REMOTE_WRITE_URL",
-          "value": "http://nginx.cortex.svc.cluster.local/api/prom/push"
-        })
-      }
-      deploy.metadata.name = req.params.app
-      deploy.spec.selector.matchLabels.name = req.params.app
-      deploy.spec.template.metadata.labels.name = req.params.app
-      deploy.spec.template.spec.containers[0].name = req.params.app
-      deploy.spec.template.spec.containers[0].image = 'labbsr0x/bb-promster'
-      deploy.spec.template.spec.containers[0].env = envVars
-      console.log(util.inspect(deploy, false, null, true /* enable colors */))
-      // console.log('deployment', deploymentManifest)
+      let settings = new Settings()
+      settings.setNamespace('barimetrics')
+      let app = new App(req.body.app)
+      let deploy = app.getManifest()
       const backend = new Request({ kubeconfig })
       const client = new Client({backend, version: '1.13'})
-      // const namespaces = await client.api.v1.namespaces.get()
-      // console.log('namespace', namespaces);
+      // // const namespaces = await client.api.v1.namespaces.get()
+      // // console.log('namespace', namespaces);
       
       
-      await client.apis.apps.v1.namespaces('barimetrics').deployments.post({ body: deploymentManifest })
-      const deployment = await client.apis.apps.v1.namespaces('barimetrics').deployments(deploymentManifest.metadata.name).get()
+      await client.apis.apps.v1.namespaces(app.getNamespace(settings)).deployments.post({ body: deploy })
+      const deployment = await client.apis.apps.v1.namespaces(app.getNamespace(settings)).deployments(deploy.metadata.name).get()
       res.status(200).json({
           "status": "OK",
           "result": deployment
