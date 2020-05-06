@@ -1,11 +1,31 @@
-const { ETCD_URLS } = require('./environment');
-const { Etcd3 } = require('etcd3');
+import { ETCD_URLS } from './environment';
+import { Etcd3 } from 'etcd3';
 
 const etcd = new Etcd3({hosts: ETCD_URLS});
 
 const SERVICE_BASE_URL = "/services"
+const APP_BASE_URL = "/apps"
 const DESC_BASE_URL = "/desc"
 const VERSION_URL = '/version'
+
+/**
+ * Adds a new app to be watch by Big Brother
+ * @param {String} name the service name
+ * @param {String} address the bb-promster address
+ * @returns {Promise<IPutResponse>}
+ */
+export async function addObjApp(app) {
+  let path = `${APP_BASE_URL}/${app.getName()}`
+  console.log('path', path)
+  let keyExists = await etcd.getAll().prefix(`${path}`).keys();
+  if(app.hasIps()) {
+    await app.getIps().map(ip => addIp(app.getName(), ip))
+  }
+  if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
+      return etcd.put(`${path}`).value(JSON.stringify(app)).exec();
+  }
+  throw Error("Duplicated app")
+}
 
 function sliceByIndex(string, index = -1, separator="/") {
   let res = string.split(separator, index); 
