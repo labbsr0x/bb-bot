@@ -8,6 +8,7 @@ const { alert } = require('./alert');
 import * as db from './db'
 const { LANGUAGE } = require('./environment')
 import kbRouter from './routers/kbRouters'
+import appRouter from './routers/appRouters'
 
 const app = express();
 
@@ -199,5 +200,6 @@ app.post("/add/version", async (req, res) => {
 })
 
 app.use('/kb', kbRouter)
+app.use('/app', appRouter)
 
 export default app;

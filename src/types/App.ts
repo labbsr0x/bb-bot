@@ -1,12 +1,46 @@
 import {Settings} from './Settings'
 
 export class App {
-  private _name: string;
+  private _name: string = '';
   private _desc: string = '';
   private _namespace: string = '';
+  private _scrapePath: Array<string> = [];
+  private _ips: Array<string> = [];
 
-  constructor(appName: string) {
-    this._name = appName;
+  constructor() {
+  
+  }
+
+  public getName(): string {
+    return this._name;
+  }
+
+  public setName(name: string) {
+    this._name = name;
+  }
+
+  public setScrapePath(path: string) {
+    this._scrapePath.push(path)
+  }
+
+  public getScrapePath() : Array<string> {
+    return this._scrapePath;
+  }
+
+  public getIps() : Array<string> {
+    return this._ips;
+  }
+
+  public hasScrapePath(): Boolean {
+    return this._scrapePath.length > 0
+  }
+
+  public hasIps(): Boolean {
+    return this._ips.length > 0
+  }
+
+  public setIps(ip: string) {
+    this._ips.push(ip)
   }
 
   public getDesc(): string {
@@ -29,6 +63,26 @@ export class App {
       return settings.getNamespace()
     }
     return 'default'
+  }
+
+  public jsonToApp(data: any) {
+    this.setNamespace('namespace' in data ? data.namespace : '')
+    this.setDesc('desc' in data ? data.desc : '')
+    this.setName('name' in data ? data.name : '')
+    if ('scrapePath' in data) {
+      if (Array.isArray(data.scrapePath)) {
+        data.scrapePath.map((path: string) => this.setScrapePath(path))
+      } else if (typeof(data.scrapePath) === 'string') {
+        this.setScrapePath(data.scrapePath)
+      }
+    }
+    if ('ips' in data) {
+      if (Array.isArray(data.ips)) {
+        data.ips.map((ips: string) => this.setIps(ips))
+      } else if (typeof(data.ips) === 'string') {
+        this.setIps(data.ips)
+      }
+    }
   }
 
   public getManifest() : object {

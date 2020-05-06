@@ -164,4 +164,28 @@ describe('Testing API handles', () => {
         });
     });
   });
+  describe('Object app', async () => {
+    it('Should add a full app', async () => {
+      let appObj = {
+        "name": "testserver7",
+        "desc": "Testando salvar um app inteiro",
+        "namespace": "",
+        "ips": [
+          "172.2.0.0:8000",
+          "172.2.0.1:8000"
+        ]
+        
+      }
+      chai.request(app)
+        .post('/app')
+        .set('Content-Type', 'application/json')
+        .send(appObj)
+        .end((err, res) => {
+              res.should.have.status(200);
+              res.body.should.be.a('object');
+              res.body.should.have.property('status');
+              res.body.status.should.be.eql("OK");
+        });
+    })
+  })
 });
