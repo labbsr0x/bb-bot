@@ -169,7 +169,6 @@ describe('Testing API handles', () => {
       const appObj = {
         name: 'testserver7',
         desc: 'Testando salvar um app inteiro',
-        namespace: '',
         ips: [
           '172.2.0.0:8000',
           '172.2.0.1:8000'
