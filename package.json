@@ -16,7 +16,7 @@
     "build": "npm-run-all clean build:types transpile",
     "test": "mocha --require @babel/register",
     "watch:dev": "nodemon",
-    "lint": "npx eslint src/"
+    "lint": "npx eslint src/ && npx eslint test/ && npx eslint src/types/*.ts"
   },
   "nodemonConfig": {
     "exec": "npm run dev",

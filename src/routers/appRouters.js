@@ -18,4 +18,15 @@ router.post('/', async (req, res) => {
   }
 })
 
+router.delete('/:app', async (req, res) => {
+  try {
+    await db.rmApp(req.params.app)
+    res.status(200).json({
+      status: 'OK'
+    })
+  } catch (err) {
+    console.log('error', err)
+  }
+})
+
 export default router
