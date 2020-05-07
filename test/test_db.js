@@ -15,7 +15,6 @@ chai.should()
 
 describe('Testing db handles', () => {
   afterEach(async () => {
-    console.log('removing')
     await db.rmApp('teste1')
     await db.rmApp('teste2')
     await db.rmApp('teste3')
