@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Settings } from './Settings'
+import Settings from './Settings'
 /* eslint-enable no-unused-vars */
 export class App {
   private _name: string = '';
@@ -20,7 +20,6 @@ export class App {
       while (matches = regex.exec(settings.geTemplate())) { // eslint-disable-line
         output.push(matches[1])
       }
-      console.log('ouput', output)
       let newName = settings.geTemplate()
       for (const parameter of output) {
         newName = newName.replace(`{${parameter}}`, `${name[parameter]}`)
@@ -77,10 +76,10 @@ export class App {
     return 'default'
   }
 
-  public jsonToApp (data: any) {
+  public jsonToApp (data: any, settings?: Settings) {
     this.setNamespace('namespace' in data ? data.namespace : '')
     this.setDesc('desc' in data ? data.desc : '')
-    this.setName('name' in data ? data.name : '')
+    this.setName(settings ? data : 'name' in data ? data.name : '', settings)
     if ('scrapePath' in data) {
       if (Array.isArray(data.scrapePath)) {
         data.scrapePath.map((path: string) => this.setScrapePath(path))

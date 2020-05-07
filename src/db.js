@@ -1,12 +1,12 @@
 import { ETCD_URLS } from './environment'
 import { Etcd3 } from 'etcd3'
-
-console.log('etcd urls', ETCD_URLS)
+import Settings from './types/Settings'
 
 const etcd = new Etcd3({ hosts: ETCD_URLS })
 
 const SERVICE_BASE_URL = '/services'
 const APP_BASE_URL = '/apps'
+const SETTINGS_BASE_URL = '/settings'
 const DESC_BASE_URL = '/desc'
 const VERSION_URL = '/version'
 
@@ -18,7 +18,6 @@ const VERSION_URL = '/version'
  */
 export async function addObjApp (app) {
   const path = `${APP_BASE_URL}/${app.getName()}`
-  console.log('path', path)
   const keyExists = await etcd.getAll().prefix(`${path}`).keys()
   if (app.hasIps()) {
     await app.getIps().map(ip => addIp(app.getName(), ip))
@@ -207,4 +206,48 @@ export async function listVersions (app, env = null) {
   return new Promise((resolve) => {
     resolve(versions)
   })
+}
+
+/**
+ * Stores settings for a namespace
+ * @param {Object} settings the settings object
+ * @returns {Promise<IPutResponse>}
+ */
+export async function saveSettings (settings) {
+  const path = `${SETTINGS_BASE_URL}/${settings.getNamespace()}`
+  const keyExists = await etcd.getAll().prefix(`${path}`).keys()
+  if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
+    return etcd.put(`${path}`).value(JSON.stringify(settings)).exec()
+  }
+  throw Error('Duplicated settings')
+}
+
+/**
+ * Load settings
+ * @param {Object} settings the settings object
+ * @returns {Promise<IPutResponse>}
+ */
+export async function loadSettings (namespace) {
+  const path = namespace ? `${SETTINGS_BASE_URL}/${namespace}` : `${SETTINGS_BASE_URL}`
+  const objects = await etcd.getAll().prefix(`${path}`).strings()
+  const result = []
+  for (const key of Object.keys(objects)) {
+    const settings = new Settings()
+    settings.dbToObj(JSON.parse(objects[key]))
+    result.push(settings)
+  }
+  if (namespace) {
+    return result[0]
+  }
+  return result
+}
+
+/**
+ * Deletes a settings
+ * @param {Object} settings to be deleted
+ * @returns {Promise<IDeleteRangeResponse>}
+ */
+export function deleteSettings (settings) {
+  const path = `${SETTINGS_BASE_URL}/${settings.getNamespace()}`
+  return etcd.delete().all().prefix(path).exec()
 }
