@@ -1,5 +1,5 @@
 import express from 'express'
-import { Settings } from '../types/Settings'
+import Settings from '../types/Settings'
 import * as db from '../db'
 
 const router = express.Router()
@@ -23,7 +23,7 @@ router.get('/:namespace?', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const settings = new Settings()
-    settings.jsonToApp(req.body)
+    settings.jsonToObj(req.body)
     await db.saveSettings(settings).catch(e => { throw e })
     res.status(200).json({
       status: 'OK',
