@@ -20,7 +20,6 @@ chai.should()
 
 describe('Testing API handles', () => {
   afterEach(async () => {
-    console.log('removing')
     await db.rmApp('teste1')
     await db.rmApp('teste2')
     await db.rmApp('teste3')
@@ -181,6 +180,25 @@ describe('Testing API handles', () => {
         .post('/app')
         .set('Content-Type', 'application/json')
         .send(appObj)
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.body.should.be.a('object')
+          res.body.should.have.property('status')
+          res.body.status.should.be.eql('OK')
+        })
+    })
+  })
+  describe('Object settings', async () => {
+    it('Should add a full settings', async () => {
+      const settingsObj = {
+        namespace: 'teste',
+        etcd: 'localhot:2379',
+        template: '{canal}/{ambiente}-{componente}'
+      }
+      chai.request(app)
+        .post('/settings')
+        .set('Content-Type', 'application/json')
+        .send(settingsObj)
         .end((err, res) => {
           res.should.have.status(200)
           res.body.should.be.a('object')
