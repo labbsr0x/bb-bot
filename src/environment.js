@@ -8,28 +8,28 @@ let BB_BOT_KB_CONFIG = process.env.BB_BOT_KB_CONFIG
  * @returns {{ETCD_URLS: string[]}}
  */
 const loadEnvs = () => {
-  if (!ETCD_URLS) {
-    throw new Error('ETCD_URLS cannot be null or empty')
-  }
+	if (!ETCD_URLS) {
+		throw new Error('ETCD_URLS cannot be null or empty')
+	}
 
-  if (!TELEGRAM_TOKEN) {
-    throw new Error('TELEGRAM_TOKEN cannot be null or empty')
-  }
+	if (!TELEGRAM_TOKEN) {
+		throw new Error('TELEGRAM_TOKEN cannot be null or empty')
+	}
 
-  if (!LANGUAGE) {
-    LANGUAGE = 'en'
-  }
+	if (!LANGUAGE) {
+		LANGUAGE = 'en'
+	}
 
-  if (!BB_BOT_KB_CONFIG) {
-    BB_BOT_KB_CONFIG = null
-  }
+	if (!BB_BOT_KB_CONFIG) {
+		BB_BOT_KB_CONFIG = null
+	}
 
-  return {
-    ETCD_URLS: ETCD_URLS.split(','),
-    TELEGRAM_TOKEN: TELEGRAM_TOKEN,
-    LANGUAGE: LANGUAGE,
-    KB_CONFIG: BB_BOT_KB_CONFIG
-  }
+	return {
+		ETCD_URLS: ETCD_URLS.split(','),
+		TELEGRAM_TOKEN: TELEGRAM_TOKEN,
+		LANGUAGE: LANGUAGE,
+		KB_CONFIG: BB_BOT_KB_CONFIG
+	}
 }
 
 module.exports = loadEnvs()

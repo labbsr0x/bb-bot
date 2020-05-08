@@ -13,19 +13,19 @@ const { LANGUAGE } = require('./environment')
 const intentMap = new Map()
 
 i18n.configure({
-  directory: path.join(__dirname, '/locales'),
-  defaultLocale: LANGUAGE,
-  register: global
+	directory: path.join(__dirname, '/locales'),
+	defaultLocale: LANGUAGE,
+	register: global
 })
 
 const actions = [
-  __('List all apps being monitored'),
-  __('Subscribe to alerts'),
-  __('Unsubscribe to alerts'),
-  __('Add a new app'),
-  __('Remove an app'),
-  __("Change an app's bb-promster address"),
-  __('Help with setting up my app observation cluster')
+	__('List all apps being monitored'),
+	__('Subscribe to alerts'),
+	__('Unsubscribe to alerts'),
+	__('Add a new app'),
+	__('Remove an app'),
+	__("Change an app's bb-promster address"),
+	__('Help with setting up my app observation cluster')
 ]
 
 /**
@@ -33,7 +33,7 @@ const actions = [
  * @param agent a dialogflow fulfillment webhook client
  */
 function welcome (agent) {
-  agent.add(getTelegramButtons(__("Welcome to Big Brother! I'm responsible for taking care of your apps! Here's what you can do with me:"), actions))
+	agent.add(getTelegramButtons(__("Welcome to Big Brother! I'm responsible for taking care of your apps! Here's what you can do with me:"), actions))
 }
 
 /**
@@ -41,13 +41,13 @@ function welcome (agent) {
  * @param {WebhookClient} agent a dialogflow fulfillment webhook client
  */
 function list (agent) {
-  return listApps().then((apps) => {
-    if (apps.length > 0) {
-      agent.add(getTelegramButtons(__("Here is the list of apps I'm watching right now.\nClick one to subscribe:"), apps, 'Subscribe to '))
-    } else {
-      agent.add(__('At this moment, there are no apps being watched by me!'))
-    }
-  })
+	return listApps().then((apps) => {
+		if (apps.length > 0) {
+			agent.add(getTelegramButtons(__("Here is the list of apps I'm watching right now.\nClick one to subscribe:"), apps, 'Subscribe to '))
+		} else {
+			agent.add(__('At this moment, there are no apps being watched by me!'))
+		}
+	})
 }
 
 /**
@@ -55,19 +55,19 @@ function list (agent) {
  * @param {WebhookClient} agent a dialogflow fulfillment webhook client
  */
 function subscribe (agent) {
-  return listApps().then((apps) => {
-    const serviceName = agent.parameters.ServiceName
-    if (apps.length > 0) {
-      if (serviceName) {
-        subscribeToApp(serviceName, agent.originalRequest.payload.chat.id)
-        agent.add(__("Subscribed to service '%s'", serviceName))
-      } else {
-        agent.add(getTelegramButtons(__('Please select one of the options bellow:'), apps, 'Subscribe to '))
-      }
-    } else {
-      agent.add(__('There are no apps being monitored at this time'))
-    }
-  })
+	return listApps().then((apps) => {
+		const serviceName = agent.parameters.ServiceName
+		if (apps.length > 0) {
+			if (serviceName) {
+				subscribeToApp(serviceName, agent.originalRequest.payload.chat.id)
+				agent.add(__("Subscribed to service '%s'", serviceName))
+			} else {
+				agent.add(getTelegramButtons(__('Please select one of the options bellow:'), apps, 'Subscribe to '))
+			}
+		} else {
+			agent.add(__('There are no apps being monitored at this time'))
+		}
+	})
 }
 
 /**
@@ -75,19 +75,19 @@ function subscribe (agent) {
  * @param {WebhookClient} agent a dialogflow fulfillment webhook client
  */
 function unsubscribe (agent) {
-  return listApps().then((apps) => {
-    const serviceName = agent.parameters.ServiceName
-    if (apps.length > 0) {
-      if (serviceName) {
-        unsubscribeToApp(serviceName, agent.originalRequest.payload.chat.from.id)
-        agent.end(__("Unsubscribed to service '%s'!", serviceName))
-      } else {
-        agent.add(__("What is the name of the service you'd like to unsubscribe?"))
-      }
-    } else {
-      agent.end(__('There are no apps being monitored at this time'))
-    }
-  })
+	return listApps().then((apps) => {
+		const serviceName = agent.parameters.ServiceName
+		if (apps.length > 0) {
+			if (serviceName) {
+				unsubscribeToApp(serviceName, agent.originalRequest.payload.chat.from.id)
+				agent.end(__("Unsubscribed to service '%s'!", serviceName))
+			} else {
+				agent.add(__("What is the name of the service you'd like to unsubscribe?"))
+			}
+		} else {
+			agent.end(__('There are no apps being monitored at this time'))
+		}
+	})
 }
 
 /**
@@ -95,17 +95,17 @@ function unsubscribe (agent) {
  * @param {WebhookClient} agent a dialogflow fulfillment webhook client
  */
 function add (agent) {
-  const serviceName = agent.parameters.ServiceName
-  const serviceURL = agent.parameters.ServiceURL
+	const serviceName = agent.parameters.ServiceName
+	const serviceURL = agent.parameters.ServiceURL
 
-  if (serviceName && serviceURL) {
-    addApp(serviceName, serviceURL)
-    agent.end(__("Service '%s' added!", serviceName))
-  } else if (!serviceName) {
-    agent.add(__("What is the name of the service you'd like to add?"))
-  } else if (!serviceURL) {
-    agent.add(__("What is the bb-promster of the service you'd like to add?"))
-  }
+	if (serviceName && serviceURL) {
+		addApp(serviceName, serviceURL)
+		agent.end(__("Service '%s' added!", serviceName))
+	} else if (!serviceName) {
+		agent.add(__("What is the name of the service you'd like to add?"))
+	} else if (!serviceURL) {
+		agent.add(__("What is the bb-promster of the service you'd like to add?"))
+	}
 }
 
 /**
@@ -113,19 +113,19 @@ function add (agent) {
  * @param {WebhookClient} agent a dialogflow fulfillment webhook client
  */
 function remove (agent) {
-  return listApps().then((apps) => {
-    const serviceName = agent.parameters.ServiceName
-    if (apps.length > 0) {
-      if (serviceName) {
-        rmApp(serviceName)
-        agent.add(__("Stopped monitoring '%s'", serviceName))
-      } else {
-        agent.add(getTelegramButtons(__('Please select one of the options bellow:'), apps))
-      }
-    } else {
-      agent.end(__('There are no apps being monitored at this time'))
-    }
-  })
+	return listApps().then((apps) => {
+		const serviceName = agent.parameters.ServiceName
+		if (apps.length > 0) {
+			if (serviceName) {
+				rmApp(serviceName)
+				agent.add(__("Stopped monitoring '%s'", serviceName))
+			} else {
+				agent.add(getTelegramButtons(__('Please select one of the options bellow:'), apps))
+			}
+		} else {
+			agent.end(__('There are no apps being monitored at this time'))
+		}
+	})
 }
 
 /**
@@ -133,21 +133,21 @@ function remove (agent) {
  * @param {WebhookClient} agent a dialogflow fulfillment webhook client
  */
 function change (agent) {
-  return listApps().then((apps) => {
-    const serviceName = agent.parameters.ServiceName
-    const newServiceURL = agent.parameters.ServiceURL
+	return listApps().then((apps) => {
+		const serviceName = agent.parameters.ServiceName
+		const newServiceURL = agent.parameters.ServiceURL
 
-    if (apps.length > 0) {
-      if (serviceName && newServiceURL) {
-        rmApp(serviceName)
-        addApp(serviceName, newServiceURL)
-      } else if (!serviceName) {
-        agent.add(getTelegramButtons(__('Please select one of the options bellow:'), apps))
-      }
-    } else {
-      agent.end(__('There are no apps being monitored at this time'))
-    }
-  })
+		if (apps.length > 0) {
+			if (serviceName && newServiceURL) {
+				rmApp(serviceName)
+				addApp(serviceName, newServiceURL)
+			} else if (!serviceName) {
+				agent.add(getTelegramButtons(__('Please select one of the options bellow:'), apps))
+			}
+		} else {
+			agent.end(__('There are no apps being monitored at this time'))
+		}
+	})
 }
 
 /**
@@ -156,11 +156,11 @@ function change (agent) {
  * @param res http response
  */
 function messageHandler (req, res) {
-  if (req.body.result || req.body.queryResult) {
-    const agent = new WebhookClient({ request: req, response: res })
-    console.log('ORIGINAL REQUEST: ' + agent.originalRequest)
-    agent.handleRequest(intentMap)
-  }
+	if (req.body.result || req.body.queryResult) {
+		const agent = new WebhookClient({ request: req, response: res })
+		console.log('ORIGINAL REQUEST: ' + agent.originalRequest)
+		agent.handleRequest(intentMap)
+	}
 }
 
 /**
@@ -168,16 +168,16 @@ function messageHandler (req, res) {
  * @returns {{messageHandler: messageHandler}}
  */
 function init () {
-  intentMap.set('Default Welcome Intent', welcome)
-  intentMap.set('List', list)
-  intentMap.set('Subscribe', subscribe)
-  intentMap.set('Unsubscribe', unsubscribe)
-  intentMap.set('Add', add)
-  intentMap.set('Remove', remove)
-  intentMap.set('Change', change)
-  return {
-    messageHandler
-  }
+	intentMap.set('Default Welcome Intent', welcome)
+	intentMap.set('List', list)
+	intentMap.set('Subscribe', subscribe)
+	intentMap.set('Unsubscribe', unsubscribe)
+	intentMap.set('Add', add)
+	intentMap.set('Remove', remove)
+	intentMap.set('Change', change)
+	return {
+		messageHandler
+	}
 }
 
 module.exports = init()

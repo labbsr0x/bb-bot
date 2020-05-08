@@ -17,20 +17,20 @@ const VERSION_URL = '/version'
  * @returns {Promise<IPutResponse>}
  */
 export async function addObjApp (app) {
-  const path = `${APP_BASE_URL}/${app.getName()}`
-  const keyExists = await etcd.getAll().prefix(`${path}`).keys()
-  if (app.hasIps()) {
-    await app.getIps().map(ip => addIp(app.getName(), ip))
-  }
-  if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
-    return etcd.put(`${path}`).value(JSON.stringify(app)).exec()
-  }
-  throw Error('Duplicated app')
+	const path = `${APP_BASE_URL}/${app.getName()}`
+	const keyExists = await etcd.getAll().prefix(`${path}`).keys()
+	if (app.hasIps()) {
+		await app.getIps().map(ip => addIp(app.getName(), ip))
+	}
+	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
+		return etcd.put(`${path}`).value(JSON.stringify(app)).exec()
+	}
+	throw Error('Duplicated app')
 }
 
 function sliceByIndex (string, index = -1, separator = '/') {
-  const res = string.split(separator, index)
-  return index <= 0 ? res[res.length - 1] : res.length === index ? res[res.length - 1] : ''
+	const res = string.split(separator, index)
+	return index <= 0 ? res[res.length - 1] : res.length === index ? res[res.length - 1] : ''
 }
 
 /**
@@ -38,27 +38,27 @@ function sliceByIndex (string, index = -1, separator = '/') {
  * @returns {Promise<string[]>}
  */
 export async function listApps (opts = {}) {
-  const descApp = 'descApp' in opts ? opts.descApp : false
-  const appss = await etcd.getAll().prefix(`${SERVICE_BASE_URL}`).keys()
-  let apps = appss.map((sub) => sliceByIndex(sub, 3))
-  apps = apps.filter(app => !app.includes('promster') && app !== '')
-  const uniqueApps = new Set(apps)
-  let uApps = [...uniqueApps]
-  if (descApp) {
-    uApps = uApps.map(async (app) => {
-      let desc = await etcd.getAll().prefix(`${DESC_BASE_URL}/${app}`).keys()
-      if (desc.length) {
-        const res = desc[0].split('/', 4)
-        desc = res.length === 4 ? res[res.length - 1] : ''
-      } else {
-        desc = ''
-      }
-      return { app: app, desc: desc }
-    })
-    const result = await Promise.all(uApps)
-    return result
-  }
-  return uApps
+	const descApp = 'descApp' in opts ? opts.descApp : false
+	const appss = await etcd.getAll().prefix(`${SERVICE_BASE_URL}`).keys()
+	let apps = appss.map((sub) => sliceByIndex(sub, 3))
+	apps = apps.filter(app => !app.includes('promster') && app !== '')
+	const uniqueApps = new Set(apps)
+	let uApps = [...uniqueApps]
+	if (descApp) {
+		uApps = uApps.map(async (app) => {
+			let desc = await etcd.getAll().prefix(`${DESC_BASE_URL}/${app}`).keys()
+			if (desc.length) {
+				const res = desc[0].split('/', 4)
+				desc = res.length === 4 ? res[res.length - 1] : ''
+			} else {
+				desc = ''
+			}
+			return { app: app, desc: desc }
+		})
+		const result = await Promise.all(uApps)
+		return result
+	}
+	return uApps
 }
 
 /**
@@ -66,14 +66,14 @@ export async function listApps (opts = {}) {
  * @returns {Promise<string[]>}
  */
 export function listIPs (app) {
-  return etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}`).keys().then((apps) => {
-    let ips = apps.map((app) => sliceByIndex(app))
-    ips = ips.filter(Boolean)
-    const uniqueIps = new Set(ips)
-    return new Promise((resolve) => {
-      resolve([...uniqueIps])
-    })
-  })
+	return etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}`).keys().then((apps) => {
+		let ips = apps.map((app) => sliceByIndex(app))
+		ips = ips.filter(Boolean)
+		const uniqueIps = new Set(ips)
+		return new Promise((resolve) => {
+			resolve([...uniqueIps])
+		})
+	})
 }
 
 /**
@@ -83,11 +83,11 @@ export function listIPs (app) {
  * @returns {Promise<IPutResponse>}
  */
 export async function addIp (app, ip) {
-  const keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).keys()
-  if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
-    return etcd.put(`${SERVICE_BASE_URL}/${app}/${ip}`).value('').exec()
-  }
-  throw Error('Duplicated app')
+	const keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).keys()
+	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
+		return etcd.put(`${SERVICE_BASE_URL}/${app}/${ip}`).value('').exec()
+	}
+	throw Error('Duplicated app')
 }
 
 /**
@@ -97,10 +97,10 @@ export async function addIp (app, ip) {
  * @returns {Promise<IPutResponse>}
  */
 export async function deleteIp (app, ip) {
-  const keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).keys()
-  if (keyExists || (Array.isArray(keyExists) && keyExists.length === 1)) {
-    return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).exec()
-  }
+	const keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).keys()
+	if (keyExists || (Array.isArray(keyExists) && keyExists.length === 1)) {
+		return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).exec()
+	}
 }
 
 /**
@@ -110,11 +110,11 @@ export async function deleteIp (app, ip) {
  * @returns {Promise<IPutResponse>}
  */
 export async function addApp (name, address) {
-  const keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${name}/${address}`).keys()
-  if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
-    return etcd.put(`${SERVICE_BASE_URL}/${name}/${address}`).value('').exec()
-  }
-  throw Error('Duplicated app')
+	const keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${name}/${address}`).keys()
+	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
+		return etcd.put(`${SERVICE_BASE_URL}/${name}/${address}`).value('').exec()
+	}
+	throw Error('Duplicated app')
 }
 
 /**
@@ -124,11 +124,11 @@ export async function addApp (name, address) {
  * @returns {Promise<IPutResponse>}
  */
 export async function addDescApp (name, desc) {
-  const keyExists = await etcd.getAll().prefix(`${DESC_BASE_URL}/${name}/${desc}`).keys()
-  if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
-    return etcd.put(`${DESC_BASE_URL}/${name}/${desc}`).value('').exec()
-  }
-  throw Error('Duplicated description')
+	const keyExists = await etcd.getAll().prefix(`${DESC_BASE_URL}/${name}/${desc}`).keys()
+	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
+		return etcd.put(`${DESC_BASE_URL}/${name}/${desc}`).value('').exec()
+	}
+	throw Error('Duplicated description')
 }
 
 /**
@@ -137,9 +137,9 @@ export async function addDescApp (name, desc) {
  * @returns {Promise<IDeleteRangeResponse>}
  */
 export async function rmApp (app) {
-  await etcd.delete().all().prefix(`${DESC_BASE_URL}/${app}`).exec()
-  await etcd.delete().all().prefix(`${APP_BASE_URL}/${app}`).exec()
-  return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}`).exec()
+	await etcd.delete().all().prefix(`${DESC_BASE_URL}/${app}`).exec()
+	await etcd.delete().all().prefix(`${APP_BASE_URL}/${app}`).exec()
+	return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}`).exec()
 }
 
 /**
@@ -149,7 +149,7 @@ export async function rmApp (app) {
  * @returns {Promise<IPutResponse>}
  */
 export function subscribeToApp (name, chatId) {
-  return etcd.put(`/subscriptions/${name}/${chatId}`).value('').exec()
+	return etcd.put(`/subscriptions/${name}/${chatId}`).value('').exec()
 }
 
 /**
@@ -159,7 +159,7 @@ export function subscribeToApp (name, chatId) {
  * @returns {Promise<IDeleteRangeResponse>}
  */
 export function unsubscribeToApp (name, chatId) {
-  return etcd.delete().all().prefix(`/subscriptions/${name}/${chatId}`).exec()
+	return etcd.delete().all().prefix(`/subscriptions/${name}/${chatId}`).exec()
 }
 
 /**
@@ -168,12 +168,12 @@ export function unsubscribeToApp (name, chatId) {
  * @returns {Promise<string[]>}
  */
 export function listSubscriptions (name) {
-  return etcd.getAll().prefix(`/subscriptions/${name}`).keys().then((subss) => {
-    const chats = subss.map((sub) => sliceByIndex(sub))
-    return new Promise((resolve) => {
-      resolve(chats)
-    })
-  })
+	return etcd.getAll().prefix(`/subscriptions/${name}`).keys().then((subss) => {
+		const chats = subss.map((sub) => sliceByIndex(sub))
+		return new Promise((resolve) => {
+			resolve(chats)
+		})
+	})
 }
 
 /**
@@ -184,7 +184,7 @@ export function listSubscriptions (name) {
  * @returns {Promise<IPutResponse>}
  */
 export function addVersionToApp (app, env, version) {
-  return etcd.put(`${VERSION_URL}/${app}/${env}/${version}`).value('').exec()
+	return etcd.put(`${VERSION_URL}/${app}/${env}/${version}`).value('').exec()
 }
 
 /**
@@ -194,18 +194,18 @@ export function addVersionToApp (app, env, version) {
  * @returns {Promise<IPutResponse>}
  */
 export async function listVersions (app, env = null) {
-  let search = `${VERSION_URL}/${app}`
-  search = env ? `${VERSION_URL}/${app}/${env}` : search
-  const versionsKeys = await etcd.getAll().prefix(search).keys()
-  const versions = versionsKeys.reduce((obj, version) => {
-    const res = version.split('/')
-    const envName = res[res.length - 2]
-    obj[envName] = res[res.length - 1]
-    return obj
-  }, {})
-  return new Promise((resolve) => {
-    resolve(versions)
-  })
+	let search = `${VERSION_URL}/${app}`
+	search = env ? `${VERSION_URL}/${app}/${env}` : search
+	const versionsKeys = await etcd.getAll().prefix(search).keys()
+	const versions = versionsKeys.reduce((obj, version) => {
+		const res = version.split('/')
+		const envName = res[res.length - 2]
+		obj[envName] = res[res.length - 1]
+		return obj
+	}, {})
+	return new Promise((resolve) => {
+		resolve(versions)
+	})
 }
 
 /**
@@ -214,12 +214,12 @@ export async function listVersions (app, env = null) {
  * @returns {Promise<IPutResponse>}
  */
 export async function saveSettings (settings) {
-  const path = `${SETTINGS_BASE_URL}/${settings.getNamespace()}`
-  const keyExists = await etcd.getAll().prefix(`${path}`).keys()
-  if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
-    return etcd.put(`${path}`).value(JSON.stringify(settings)).exec()
-  }
-  throw Error('Duplicated settings')
+	const path = `${SETTINGS_BASE_URL}/${settings.getNamespace()}`
+	const keyExists = await etcd.getAll().prefix(`${path}`).keys()
+	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
+		return etcd.put(`${path}`).value(JSON.stringify(settings)).exec()
+	}
+	throw Error('Duplicated settings')
 }
 
 /**
@@ -228,18 +228,18 @@ export async function saveSettings (settings) {
  * @returns {Promise<IPutResponse>}
  */
 export async function loadSettings (namespace) {
-  const path = namespace ? `${SETTINGS_BASE_URL}/${namespace}` : `${SETTINGS_BASE_URL}`
-  const objects = await etcd.getAll().prefix(`${path}`).strings()
-  const result = []
-  for (const key of Object.keys(objects)) {
-    const settings = new Settings()
-    settings.dbToObj(JSON.parse(objects[key]))
-    result.push(settings)
-  }
-  if (namespace) {
-    return result[0]
-  }
-  return result
+	const path = namespace ? `${SETTINGS_BASE_URL}/${namespace}` : `${SETTINGS_BASE_URL}`
+	const objects = await etcd.getAll().prefix(`${path}`).strings()
+	const result = []
+	for (const key of Object.keys(objects)) {
+		const settings = new Settings()
+		settings.dbToObj(JSON.parse(objects[key]))
+		result.push(settings)
+	}
+	if (namespace) {
+		return result[0]
+	}
+	return result
 }
 
 /**
@@ -248,6 +248,6 @@ export async function loadSettings (namespace) {
  * @returns {Promise<IDeleteRangeResponse>}
  */
 export function deleteSettings (settings) {
-  const path = `${SETTINGS_BASE_URL}/${settings.getNamespace()}`
-  return etcd.delete().all().prefix(path).exec()
+	const path = `${SETTINGS_BASE_URL}/${settings.getNamespace()}`
+	return etcd.delete().all().prefix(path).exec()
 }

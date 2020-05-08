@@ -23,5 +23,7 @@
         "@typescript-eslint"
     ],
     "rules": {
+      "indent": ["error", "tab"],
+      "no-tabs": "off"
     }
 }
