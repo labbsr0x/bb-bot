@@ -19,9 +19,12 @@ A repository to define a Telegram Bot for handling alerts emitted by a Big Broth
 
 7. Now go to the bot on Telegram, and add a new App. Inform the App name (e.g. `Example`) and the app address (e.g. `example-bb-promster:9090`). You'll be automatically subscribed to the app you've just added.
 
+
 The example client app `bb-promster` cluster will get registered to the **Big Brother's** ETCD and **Big Brother** will then start collecting metrics by federating it.
 
 Also, access `http://localhost:3000/test` on your browser to dispatch test alerts and see if you get them at your Telegram chat. 
+
+If you are using VSCode, you should use **editor.insertSpaces** equal **false** on your settings.
 
 # Big Brother
 
