@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { App } from '../dist-server/types/App'
+import App from '../dist-server/types/App'
 import Settings from '../dist-server/types/Settings'
 const sinon = require('sinon')
 var chai = require('chai')

@@ -2,65 +2,28 @@
   "apiVersion": "apps/v1",
   "kind": "Deployment",
   "metadata": {
-    "name": "test-bb-promster-example"
+    "name": ""
   },
   "spec": {
     "replicas": 1,
     "selector": {
       "matchLabels": {
-        "name": "test-bb-promster-example"
+        "name": ""
       }
     },
     "template": {
       "metadata": {
         "labels": {
-          "name": "test-bb-promster-example"
+          "name": ""
         }
       },
       "spec": {
         "containers": [
           {
-            "name": "test-bb-promster-example",
-            "image": "labbsr0x/bb-promster:latest",
-            "env": [
-              {
-                "name": "REGISTRY_ETCD_URL",
-                "value": "http://etcd.default.svc.cluster.local:2379"
-              },
-              {
-                "name": "REGISTRY_SERVICE",
-                "value": "example"
-              },
-              {
-                "name": "REGISTRY_ETCD_BASE",
-                "value": "/services"
-              },
-              {
-                "name": "REGISTRY_SERVICE",
-                "value": "example"
-              },
-              {
-                "name": "REGISTRY_ETCD_BASE",
-                "value": "/services"
-              },
-              {
-                "name": "BB_PROMSTER_LEVEL",
-                "value": "1"
-              },
-              {
-                "name": "ETCD_URLS",
-                "value": "http://etcd.default.svc.cluster.local:2379"
-              },
-              {
-                "name": "SCRAPE_ETCD_PATH",
-                "value": "/services/example"
-              },
-              {
-                "name": "REMOTE_WRITE_URL",
-                "value": "http://nginx.cortex.svc.cluster.local/api/prom/push"
-              }
-            ],
-            "imagePullPolicy": "IfNotPresent",
+            "name": "",
+            "image": "",
+						"imagePullPolicy": "IfNotPresent",
+						"env": null,
             "ports": [
               {
                 "containerPort": 9090
