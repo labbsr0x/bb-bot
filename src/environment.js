@@ -21,7 +21,7 @@ const loadEnvs = () => {
 	}
 
 	if (!BB_BOT_KB_CONFIG) {
-		BB_BOT_KB_CONFIG = null
+		BB_BOT_KB_CONFIG = ''
 	}
 
 	return {
