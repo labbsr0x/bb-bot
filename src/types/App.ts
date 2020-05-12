@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import Settings from './Settings'
 /* eslint-enable no-unused-vars */
-export class App {
+export default class App {
 	private _name: string = '';
 	private _desc: string = '';
 	private _namespace: string = '';
@@ -28,6 +28,10 @@ export class App {
 		} else {
 			this._name = name
 		}
+	}
+
+	public getNameDeploy () : string {
+		return this._name.replace('/', '-')
 	}
 
 	public setScrapePath (path: string) {
@@ -96,10 +100,18 @@ export class App {
 		}
 	}
 
-	public getManifest () : object {
+	public dbToObj (data: any) {
+		this.setNamespace('_namespace' in data ? data._namespace : '')
+		this.setName('_name' in data ? data._name : '')
+		this.setDesc('_desc' in data ? data._desc : '')
+		data._ips.map((ips: string) => this.setIps(ips))
+		data._scrapePath.map((path: string) => this.setScrapePath(path))
+	}
+
+	public getManifest (settings: Settings) : object {
 		const deploymentManifest = require('../deployments/bb-promster.json')
 		const deploy = { ...deploymentManifest }
-		const etcdService = 'http://etcd.barimetrics.svc.cluster.local:2379'
+		const etcdService = settings.getEtcdService()
 		const envVars = [
 			{
 				name: 'REGISTRY_ETCD_URL',
@@ -130,18 +142,17 @@ export class App {
 				value: `/services/${this._name}`
 			}
 		]
-		const remoteWrite = false
-		if (remoteWrite) {
+		if (settings.geRemoteWrite()) {
 			envVars.push({
 				name: 'REMOTE_WRITE_URL',
-				value: 'http://nginx.cortex.svc.cluster.local/api/prom/push'
+				value: settings.geRemoteWrite()
 			})
 		}
-		deploy.metadata.name = this._name
-		deploy.spec.selector.matchLabels.name = this._name
-		deploy.spec.template.metadata.labels.name = this._name
-		deploy.spec.template.spec.containers[0].name = this._name
-		deploy.spec.template.spec.containers[0].image = 'labbsr0x/bb-promster'
+		deploy.metadata.name = this.getNameDeploy()
+		deploy.spec.selector.matchLabels.name = this.getNameDeploy()
+		deploy.spec.template.metadata.labels.name = this.getNameDeploy()
+		deploy.spec.template.spec.containers[0].name = this.getNameDeploy()
+		deploy.spec.template.spec.containers[0].image = settings.getDockerImage()
 		deploy.spec.template.spec.containers[0].env = envVars
 		return deploy
 	}
