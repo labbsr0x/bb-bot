@@ -1,6 +1,7 @@
 import { ETCD_URLS } from './environment'
 import { Etcd3 } from 'etcd3'
 import Settings from './types/Settings'
+import App from './types/App'
 
 const etcd = new Etcd3({ hosts: ETCD_URLS })
 
@@ -26,6 +27,27 @@ export async function addObjApp (app) {
 		return etcd.put(`${path}`).value(JSON.stringify(app)).exec()
 	}
 	throw Error('Duplicated app')
+}
+
+/**
+ * Load apps
+ * @param {Object} appName option app name parameter
+ * @returns {Promise<IPutResponse>}
+ */
+export async function loadApps (appName) {
+	const path = appName ? `${APP_BASE_URL}/${appName}` : `${APP_BASE_URL}`
+	const objects = await etcd.getAll().prefix(`${path}`).strings()
+	const result = []
+	for (const key of Object.keys(objects)) {
+		const app = new App()
+		app.dbToObj(JSON.parse(objects[key]))
+		result.push(app)
+	}
+	if (result.length === 0) throw Error('No app found')
+	if (appName) {
+		return result[0]
+	}
+	return result
 }
 
 function sliceByIndex (string, index = -1, separator = '/') {
