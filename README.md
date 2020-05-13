@@ -24,7 +24,6 @@ The example client app `bb-promster` cluster will get registered to the **Big Br
 
 Also, access `http://localhost:3000/test` on your browser to dispatch test alerts and see if you get them at your Telegram chat. 
 
-If you are using VSCode, you should use **editor.insertSpaces** equal **false** on your settings.
 
 # Big Brother
 
