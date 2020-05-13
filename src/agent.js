@@ -24,7 +24,7 @@ const actions = [
 	__('Unsubscribe to alerts'),
 	__('Add a new app'),
 	__('Remove an app'),
-	__("Change an app's bb-promster address"),
+	__('Change an app\'s bb-promster address'),
 	__('Help with setting up my app observation cluster')
 ]
 
