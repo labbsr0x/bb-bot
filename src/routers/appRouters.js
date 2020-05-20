@@ -23,7 +23,7 @@ router.get('/:app?', async (req, res) => {
 router.post('/', async (req, res) => {
 	try {
 		let settings
-		if ('namespace' in req.body) {
+		if ('namespace' in req.body && req.body.namespace) {
 			settings = await db.loadSettings(req.body.namespace)
 		}
 		const app = new App()
