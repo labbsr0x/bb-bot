@@ -59,7 +59,7 @@ function subscribe (agent) {
 		const serviceName = agent.parameters.ServiceName
 		if (apps.length > 0) {
 			if (serviceName) {
-				subscribeToApp(serviceName, agent.originalRequest.payload.chat.id)
+				subscribeToApp(serviceName, agent.originalRequest.payload.data.callback_query.from.id)
 				agent.add(__("Subscribed to service '%s'", serviceName))
 			} else {
 				agent.add(getTelegramButtons(__('Please select one of the options bellow:'), apps, 'Subscribe to '))
