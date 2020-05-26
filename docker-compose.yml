@@ -8,7 +8,7 @@ services:
       - ETCD_URLS=http://etcd:2379
       - TELEGRAM_TOKEN=<your telegram token>
       - DEBUG=*
-      - LANGUAGE=en
+      - LANGUAGE=pt
     volumes:
       - ${PWD}/src:/app/src
       - ${PWD}/test:/app/test
@@ -35,7 +35,7 @@ services:
   # below is defined the example setup for metric consumption by big brother
 
   example-service:
-    image: labbsr0x/metrics-generator-tabajara:latest
+    image: labbsr0x/metrics-generator:latest
     depends_on:
       - etcd
     ports:
@@ -46,7 +46,7 @@ services:
       - REGISTRY_ETCD_URL=http://etcd:2379
 
   example-service2:
-    image: labbsr0x/metrics-generator-tabajara:latest
+    image: labbsr0x/metrics-generator:latest
     depends_on:
       - etcd
     ports:
