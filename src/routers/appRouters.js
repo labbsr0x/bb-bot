@@ -28,6 +28,10 @@ router.post('/', async (req, res) => {
 		}
 		const app = new App()
 		app.jsonToApp(req.body, settings)
+		const exists = await db.existsApp(app.getName()).catch(e => { throw e })
+		if (exists) {
+			throw Error('Duplicated app')
+		}
 		await db.addObjApp(app).catch(e => { throw e })
 		res.status(200).json({
 			status: 'OK',

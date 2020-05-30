@@ -50,6 +50,18 @@ export async function loadApps (appName) {
 	return result
 }
 
+/**
+ * Check if app already exists
+*/
+export async function existsApp (appName) {
+	const path = `${APP_BASE_URL}/${appName}`
+	const keyExists = await etcd.getAll().prefix(path).keys()
+	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
+		return false
+	}
+	return true
+}
+
 function sliceByIndex (string, index = -1, separator = '/') {
 	const res = string.split(separator, index)
 	return index <= 0 ? res[res.length - 1] : res.length === index ? res[res.length - 1] : ''
