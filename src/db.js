@@ -17,13 +17,16 @@ const VERSION_URL = '/version'
  * @param {String} address the bb-promster address
  * @returns {Promise<IPutResponse>}
  */
-export async function addObjApp (app) {
+export async function addObjApp (app, update = false) {
 	const path = `${APP_BASE_URL}/${app.getName()}`
 	const keyExists = await etcd.getAll().prefix(`${path}`).keys()
-	if (app.hasIps()) {
-		await app.getIps().map(ip => addIp(app.getName(), ip))
+	if (update) {
+		await deleteIp(app.getName())
 	}
-	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
+	if (app.hasIps()) {
+		await app.getIps().forEach(ip => addIp(app.getName(), ip))
+	}
+	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0) || update) {
 		return etcd.put(`${path}`).value(JSON.stringify(app)).exec()
 	}
 	throw Error('Duplicated app')
@@ -52,6 +55,8 @@ export async function loadApps (appName) {
 
 /**
  * Check if app already exists
+ * @param {Object} appName option app name parameter
+ * @returns {Promise<IPutResponse>}
 */
 export async function existsApp (appName) {
 	const path = `${APP_BASE_URL}/${appName}`
@@ -131,9 +136,10 @@ export async function addIp (app, ip) {
  * @returns {Promise<IPutResponse>}
  */
 export async function deleteIp (app, ip) {
-	const keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).keys()
-	if (keyExists || (Array.isArray(keyExists) && keyExists.length === 1)) {
-		return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).exec()
+	const path = ip ? `${SERVICE_BASE_URL}/${app}/${ip}` : `${SERVICE_BASE_URL}/${app}`
+	const keyExists = await etcd.getAll().prefix(path).keys()
+	if (keyExists || (Array.isArray(keyExists) && keyExists.length >= 1)) {
+		return etcd.delete().all().prefix(path).exec()
 	}
 }
 
