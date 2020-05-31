@@ -38,16 +38,20 @@ router.post('/', async (req, res) => {
 	}
 })
 
-router.delete('/:namespace', async (req, res) => {
+router.delete('/', async (req, res) => {
 	try {
 		const settings = new Settings()
-		settings.setNamespace(req.params.namespace)
+		settings.setNamespace(req.body.namespace)
 		await db.deleteSettings(settings)
 		res.status(200).json({
 			status: 'OK'
 		})
 	} catch (err) {
 		console.log('error', err)
+		res.status(400).json({
+			status: 'Err',
+			message: err
+		})
 	}
 })
 
