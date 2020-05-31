@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import app from '../dist-server/server'
 import * as db from '../dist-server/db'
+import App from '../dist-server/types/App'
 
 const sinon = require('sinon')
 var chai = require('chai')
@@ -18,7 +19,7 @@ var assert = chai.assert
 
 chai.should()
 
-describe('Testing API handles', () => {
+describe('Testing API App handles', () => {
 	afterEach(async () => {
 		await db.rmApp('teste1')
 		await db.rmApp('teste2')
@@ -92,48 +93,6 @@ describe('Testing API handles', () => {
 				})
 		})
 	})
-	describe('Ips', async () => {
-		it('Should add an ip', async () => {
-			await db.addApp('teste1', 'http://teste.com')
-			chai.request(app)
-				.post('/add/ip')
-				.set('Content-Type', 'application/json')
-				.send({ app: 'teste1', ip: '127.0.0.1:8000' })
-				.end((err, res) => {
-					res.should.have.status(200)
-					res.body.should.be.a('object')
-					res.body.should.have.property('status')
-					res.body.status.should.be.eql('OK')
-				})
-		})
-		it('Should list ips', async () => {
-			await db.addApp('teste1', 'http://teste.com')
-			const appName = 'teste1'
-			chai.request(app)
-				.get(`/list/ips/${appName}`)
-				.set('Content-Type', 'application/json')
-				.send()
-				.end((err, res) => {
-					res.should.have.status(200)
-					res.body.should.be.a('object')
-					res.body.should.have.property('status')
-					res.body.status.should.be.eql('OK')
-				})
-		})
-		it('Should remove ip', async () => {
-			await db.addApp('teste1', 'http://teste.com')
-			chai.request(app)
-				.post('/remove/ip')
-				.set('Content-Type', 'application/json')
-				.send({ app: 'teste1', ip: 'http://teste.com' })
-				.end((err, res) => {
-					res.should.have.status(200)
-					res.body.should.be.a('object')
-					res.body.should.have.property('status')
-					res.body.status.should.be.eql('OK')
-				})
-		})
-	})
 	describe('Versions', async () => {
 		it('Should add a version', async () => {
 			await db.addApp('teste1', 'http://teste.com')
@@ -164,7 +123,7 @@ describe('Testing API handles', () => {
 				})
 		})
 	})
-	describe('Object app', async () => {
+	describe('Save app', async () => {
 		it('Should add a full app', async () => {
 			const appObj = {
 				name: 'testserver7',
@@ -186,23 +145,69 @@ describe('Testing API handles', () => {
 					res.body.status.should.be.eql('OK')
 				})
 		})
-	})
-	describe('Object settings', async () => {
-		it('Should add a full settings', async () => {
-			const settingsObj = {
-				namespace: 'teste',
-				etcd: 'localhot:2379',
-				template: '{canal}/{ambiente}-{componente}'
-			}
+		it('Delete app', async () => {
 			chai.request(app)
-				.post('/settings')
+				.delete('/app')
 				.set('Content-Type', 'application/json')
-				.send(settingsObj)
+				.send({ name: 'testserver7' })
 				.end((err, res) => {
 					res.should.have.status(200)
 					res.body.should.be.a('object')
 					res.body.should.have.property('status')
 					res.body.status.should.be.eql('OK')
+				})
+		})
+	})
+	describe('Ips', async () => {
+		it('Should add an ip to app', async () => {
+			const appObj = {
+				name: 'testserver8',
+				desc: 'Testando salvar um app inteiro',
+				ips: [
+					'172.2.0.0:8000',
+					'172.2.0.1:8000'
+				]
+			}
+			const appOb = App.createApp(appObj)
+			await db.addObjApp(appOb).catch(e => { throw e })
+			const ip = '127.0.0.1:8000'
+			await db.addApp('teste1', 'http://teste.com')
+			chai.request(app)
+				.patch('/app/ip')
+				.set('Content-Type', 'application/json')
+				.send({ name: appOb.getName(), ip: ip })
+				.end((err, res) => {
+					res.should.have.status(200)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('OK')
+				})
+		})
+		it('Should remove ip', async () => {
+			const appObj = {
+				name: 'testserver9',
+				desc: 'Testando salvar um app inteiro',
+				ips: [
+					'172.2.0.0:8000',
+					'172.2.0.1:8000'
+				]
+			}
+			const appOb = App.createApp(appObj)
+			await db.addObjApp(appOb).catch(e => { throw e })
+			const ip = '127.0.0.1:8000'
+			await db.addApp(appOb.getName(), 'http://teste.com')
+			chai.request(app)
+				.delete('/app/ip')
+				.set('Content-Type', 'application/json')
+				.send({ name: appOb.getName(), ip: ip })
+				.end((err, res) => {
+					res.should.have.status(200)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('OK')
+					res.body.should.have.property('result')
+					res.body.result.should.be.an('object').have.property('_ips')
+					res.body.result._ips.should.be.eql(['172.2.0.0:8000', '172.2.0.1:8000'])
 				})
 		})
 	})

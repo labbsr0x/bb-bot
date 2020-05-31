@@ -52,7 +52,6 @@ app.post('/alertmanager', async (req, res) => {
 })
 
 app.post('/add/app', async (req, res) => {
-	console.log('add app')
 	try {
 		await db.addApp(req.body.name, req.body.address)
 		if ('desc' in req.body) {
@@ -70,7 +69,6 @@ app.post('/add/app', async (req, res) => {
 })
 
 app.post('/remove/app', async (req, res) => {
-	console.log('add app')
 	try {
 		await db.rmApp(req.body.name)
 		res.status(200).json({
@@ -112,50 +110,6 @@ app.post('/subscribe', async (req, res) => {
 	res.status(200).json({
 		status: 'OK'
 	})
-})
-
-app.post('/add/ip', async (req, res) => {
-	console.log('add ip')
-	try {
-		await db.addIp(req.body.app, req.body.ip)
-		res.status(200).json({
-			status: 'OK'
-		})
-	} catch (err) {
-		console.debug('error', err)
-		res.status(400).json({
-			status: 'Err'
-		})
-	}
-})
-
-app.post('/remove/ip', async (req, res) => {
-	try {
-		await db.deleteIp(req.body.app, req.body.ip)
-		res.status(200).json({
-			status: 'OK'
-		})
-	} catch (err) {
-		console.debug('error', err)
-		res.status(400).json({
-			status: 'Err'
-		})
-	}
-})
-
-app.get('/list/ips/:app', async (req, res) => {
-	try {
-		const ips = await db.listIPs(req.params.app)
-		res.status(200).json({
-			status: 'OK',
-			result: ips
-		})
-	} catch (err) {
-		console.debug('erro', err)
-		res.status(400).json({
-			status: 'Err'
-		})
-	}
 })
 
 app.get('/list/version/:app', async (req, res) => {

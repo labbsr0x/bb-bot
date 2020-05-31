@@ -42,7 +42,7 @@ export default class App {
 		return this._scrapePath
 	}
 
-	public getIps () : Array<string> {
+	public getIps () : any {
 		return this._ips
 	}
 
@@ -55,7 +55,18 @@ export default class App {
 	}
 
 	public setIps (ip: string) {
-		this._ips.push(ip)
+		if (!this._ips.find(elem => elem === ip)) {
+			this._ips.push(ip)
+		}
+	}
+
+	public removeIps (ip: string) {
+		const index = this._ips.indexOf(ip)
+		if (index > -1) {
+			this._ips.splice(index, 1)
+			return true
+		}
+		throw Error('IP not found')
 	}
 
 	public getDesc (): string {
@@ -78,6 +89,12 @@ export default class App {
 			return settings.getNamespace()
 		}
 		return 'default'
+	}
+
+	static createApp (data: any, settings?: Settings) {
+		const app = new App()
+		app.jsonToApp(data, settings)
+		return app
 	}
 
 	public jsonToApp (data: any, settings?: Settings) {
