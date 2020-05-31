@@ -20,8 +20,8 @@ var assert = chai.assert
 chai.should()
 
 describe('Testing API settings', () => {
-	describe('Save settings', async () => {
-		it('Should add a full settings', async () => {
+	describe('Settings', async () => {
+		it('Save settings', async () => {
 			const settingsObj = {
 				namespace: 'teste',
 				etcd: 'localhot:2379',
@@ -31,6 +31,31 @@ describe('Testing API settings', () => {
 				.post('/settings')
 				.set('Content-Type', 'application/json')
 				.send(settingsObj)
+				.end((err, res) => {
+					res.should.have.status(200)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('OK')
+				})
+		})
+		it('Get settings', async () => {
+			chai.request(app)
+				.get('/settings')
+				.set('Content-Type', 'application/json')
+				.end((err, res) => {
+					res.should.have.status(200)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('OK')
+					res.body.should.have.property('result')
+					res.body.result.should.be.an('array')
+				})
+		})
+		it('Delete settings', async () => {
+			chai.request(app)
+				.delete('/settings')
+				.set('Content-Type', 'application/json')
+				.send({ namespace: 'teste' })
 				.end((err, res) => {
 					res.should.have.status(200)
 					res.body.should.be.a('object')

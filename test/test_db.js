@@ -77,7 +77,6 @@ describe('Testing db handles', () => {
 		it('should list the apps', async () => {
 			await db.addVersionToApp('teste2', 'prod', 'v0.1.0')
 			await db.addVersionToApp('teste2', 'dev', 'v0.0.9')
-			console.log('list version', db.listVersions('teste2'))
 			return assert.eventually.deepEqual(db.listVersions('teste2'), { prod: 'v0.1.0', dev: 'v0.0.9' })
 		})
 	})
