@@ -12,9 +12,10 @@ const loadSettings = async (req) => {
 	return null
 }
 
-router.get('/:app?', async (req, res) => {
+router.get('/', async (req, res) => {
 	try {
-		const apps = await db.loadApps(req.params.app).catch(e => { throw e })
+		const query = 'name' in req.query ? req.query.name : ''
+		const apps = await db.loadApps(query).catch(e => { throw e })
 		res.status(200).json({
 			status: 'OK',
 			result: apps
