@@ -9,6 +9,8 @@ services:
       - TELEGRAM_TOKEN=<your telegram token>
       - DEBUG=*
       - LANGUAGE=en
+      - BASIC_AUTH_USERNAME=bot
+      - BASIC_AUTH_PASSWORD=bot
     volumes:
       - ${PWD}/src:/app/src
       - ${PWD}/test:/app/test

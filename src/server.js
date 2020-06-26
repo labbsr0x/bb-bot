@@ -11,7 +11,7 @@ const i18n = require('i18n')
 const { messageHandler } = require('./agent')
 const { alert } = require('./alert')
 const { LANGUAGE } = require('./environment')
-const { isValidAuth, simpleAuth } = require('./auth')
+const { isValidAuth } = require('./auth')
 
 const app = express()
 
@@ -24,6 +24,7 @@ i18n.configure({
 app.use(cors())
 app.use(bodyParser.json())
 app.use(i18n.init)
+app.use('*', isValidAuth)
 
 app.post('/', messageHandler)
 
@@ -142,11 +143,8 @@ app.post('/add/version', async (req, res) => {
 	}
 })
 
-app.post('/auth', simpleAuth)
-
 app.use('/kb', kbRouter)
 app.use('/app', appRouter)
 app.use('/settings', settingsRouter)
-app.use('*', isValidAuth)
 
 export default app

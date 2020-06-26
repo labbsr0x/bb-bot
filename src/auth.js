@@ -2,8 +2,14 @@ const { BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD } = require('./environment')
 
 function isValidAuth (req, res, next) {
 	const authorizationHeader = req.get('Authorization')
+	if (!authorizationHeader) {
+		return res.status(400).json({
+			status: 'Error',
+			message: 'Invalid authorization'
+		})
+	}
+
 	const token = authorizationHeader.split(' ')[1]
-	// const textToken = Buffer.from(token, 'base64').toString('ascii')
 	const validToken = simpleAuth()
 	if (token === validToken) {
 		return next()
@@ -15,12 +21,10 @@ function isValidAuth (req, res, next) {
 	}
 }
 
-function simpleAuth (req, res, next) {
-	console.log('simple auth')
+function simpleAuth () {
 	const user = BASIC_AUTH_USERNAME
 	const password = BASIC_AUTH_PASSWORD
-	const buff = Buffer.from(user + ':' + password)
-	const encodeString = buff.toString('base64')
+	const encodeString = Buffer.from(user + ':' + password).toString('base64')
 
 	return encodeString
 }
