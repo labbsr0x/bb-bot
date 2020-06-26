@@ -12,6 +12,7 @@ function isValidAuth (req, res, next) {
 	const token = authorizationHeader.split(' ')[1]
 	const validToken = simpleAuth()
 	if (token === validToken) {
+		res.status(200)
 		return next()
 	} else {
 		res.status(400).json({
