@@ -32,6 +32,7 @@ describe('Testing API App handles', () => {
 			chai.request(app)
 				.post('/add/app')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send(appTeste)
 				.end((err, res) => {
 					res.should.have.status(200)
@@ -45,6 +46,7 @@ describe('Testing API App handles', () => {
 			chai.request(app)
 				.post('/add/app')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send(appTeste)
 				.end((err, res) => {
 					res.should.have.status(200)
@@ -58,6 +60,7 @@ describe('Testing API App handles', () => {
 			chai.request(app)
 				.get('/list/apps')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send()
 				.end((err, res) => {
 					res.should.have.status(200)
@@ -71,6 +74,7 @@ describe('Testing API App handles', () => {
 			chai.request(app)
 				.get('/list/apps?descApp=true')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send()
 				.end((err, res) => {
 					res.should.have.status(200)
@@ -84,6 +88,7 @@ describe('Testing API App handles', () => {
 			chai.request(app)
 				.post('/remove/app')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send({ name: 'teste1' })
 				.end((err, res) => {
 					res.should.have.status(200)
@@ -99,6 +104,7 @@ describe('Testing API App handles', () => {
 			chai.request(app)
 				.post('/add/version')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send({ app: 'teste1', env: 'prod', version: 'v0.1.0' })
 				.end((err, res) => {
 					res.should.have.status(200)
@@ -113,6 +119,7 @@ describe('Testing API App handles', () => {
 			chai.request(app)
 				.get(`/list/version/${appName}`)
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send()
 				.end((err, res) => {
 					res.should.have.status(200)
@@ -137,6 +144,7 @@ describe('Testing API App handles', () => {
 			chai.request(app)
 				.post('/app')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send(appObj)
 				.end((err, res) => {
 					res.should.have.status(200)
@@ -149,6 +157,7 @@ describe('Testing API App handles', () => {
 			chai.request(app)
 				.delete('/app')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send({ name: 'testserver7' })
 				.end((err, res) => {
 					res.should.have.status(200)
@@ -175,6 +184,7 @@ describe('Testing API App handles', () => {
 			chai.request(app)
 				.patch('/app/ip')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send({ name: appOb.getName(), ip: ip })
 				.end((err, res) => {
 					res.should.have.status(200)
@@ -199,6 +209,7 @@ describe('Testing API App handles', () => {
 			chai.request(app)
 				.delete('/app/ip')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send({ name: appOb.getName(), ip: ip })
 				.end((err, res) => {
 					res.should.have.status(200)

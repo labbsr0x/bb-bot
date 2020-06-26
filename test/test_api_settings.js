@@ -30,6 +30,7 @@ describe('Testing API settings', () => {
 			chai.request(app)
 				.post('/settings')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send(settingsObj)
 				.end((err, res) => {
 					res.should.have.status(200)
@@ -42,6 +43,7 @@ describe('Testing API settings', () => {
 			chai.request(app)
 				.get('/settings')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.end((err, res) => {
 					res.should.have.status(200)
 					res.body.should.be.a('object')
@@ -55,6 +57,7 @@ describe('Testing API settings', () => {
 			chai.request(app)
 				.delete('/settings')
 				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
 				.send({ namespace: 'teste' })
 				.end((err, res) => {
 					res.should.have.status(200)
