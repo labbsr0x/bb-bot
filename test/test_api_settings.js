@@ -66,5 +66,48 @@ describe('Testing API settings', () => {
 					res.body.status.should.be.eql('OK')
 				})
 		})
+		it('Should not save settings using invalid authentication', async () => {
+			const settingsObj = {
+				namespace: 'teste',
+				etcd: 'localhot:2379',
+				template: '{canal}/{ambiente}-{componente}'
+			}
+			chai.request(app)
+				.post('/settings')
+				.set('Content-Type', 'application/json')
+				.auth('bot', 'inv')
+				.send(settingsObj)
+				.end((err, res) => {
+					res.should.have.status(400)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('Error')
+				})
+		})
+		it('Should not get settings using invalid authentication', async () => {
+			chai.request(app)
+				.get('/settings')
+				.set('Content-Type', 'application/json')
+				.auth('bot', 'inv')
+				.end((err, res) => {
+					res.should.have.status(400)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('Error')
+				})
+		})
+		it('Should not delete settings using invalid authentication', async () => {
+			chai.request(app)
+				.delete('/settings')
+				.set('Content-Type', 'application/json')
+				.auth('bot', 'inv')
+				.send({ namespace: 'teste' })
+				.end((err, res) => {
+					res.should.have.status(400)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('Error')
+				})
+		})
 	})
 })
