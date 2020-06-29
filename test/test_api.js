@@ -237,6 +237,41 @@ describe('Testing API App handles', () => {
 					res.body.status.should.be.eql('OK')
 				})
 		})
+		it('Should not add a full app using invalid auth', async () => {
+			const appObj = {
+				name: 'testserver7',
+				desc: 'Testando salvar um app inteiro',
+				ips: [
+					'172.2.0.0:8000',
+					'172.2.0.1:8000'
+				]
+
+			}
+			chai.request(app)
+				.post('/app')
+				.set('Content-Type', 'application/json')
+				.auth('bot', 'inv')
+				.send(appObj)
+				.end((err, res) => {
+					res.should.have.status(400)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('Error')
+				})
+		})
+		it('Should not delete app using invalid auth', async () => {
+			chai.request(app)
+				.delete('/app')
+				.set('Content-Type', 'application/json')
+				.auth('bot', 'inv')
+				.send({ name: 'testserver7' })
+				.end((err, res) => {
+					res.should.have.status(400)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('Error')
+				})
+		})
 	})
 	describe('Ips', async () => {
 		it('Should add an ip to app', async () => {
