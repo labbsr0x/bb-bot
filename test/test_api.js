@@ -327,5 +327,55 @@ describe('Testing API App handles', () => {
 					res.body.result._ips.should.be.eql(['172.2.0.0:8000', '172.2.0.1:8000'])
 				})
 		})
+		it('Should not add an ip to app using invalid authentication', async () => {
+			const appObj = {
+				name: 'testserver10',
+				desc: 'Testando salvar um app inteiro',
+				ips: [
+					'172.2.0.0:8000',
+					'172.2.0.1:8000'
+				]
+			}
+			const appOb = App.createApp(appObj)
+			await db.addObjApp(appOb).catch(e => { throw e })
+			const ip = '127.0.0.1:8000'
+			await db.addApp('teste1', 'http://teste.com')
+			chai.request(app)
+				.patch('/app/ip')
+				.set('Content-Type', 'application/json')
+				.auth('bot', 'inv')
+				.send({ name: appOb.getName(), ip: ip })
+				.end((err, res) => {
+					res.should.have.status(400)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('Error')
+				})
+		})
+		it('Should not remove ip using invalid authentication', async () => {
+			const appObj = {
+				name: 'testserver11',
+				desc: 'Testando salvar um app inteiro',
+				ips: [
+					'172.2.0.0:8000',
+					'172.2.0.1:8000'
+				]
+			}
+			const appOb = App.createApp(appObj)
+			await db.addObjApp(appOb).catch(e => { throw e })
+			const ip = '127.0.0.1:8000'
+			await db.addApp(appOb.getName(), 'http://teste.com')
+			chai.request(app)
+				.delete('/app/ip')
+				.set('Content-Type', 'application/json')
+				.auth('bot', 'inv')
+				.send({ name: appOb.getName(), ip: ip })
+				.end((err, res) => {
+					res.should.have.status(400)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('Error')
+				})
+		})
 	})
 })
