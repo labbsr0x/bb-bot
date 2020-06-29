@@ -1,6 +1,9 @@
 const { BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD } = require('./environment')
 
 function isValidAuth (req, res, next) {
+	if (!BASIC_AUTH_PASSWORD || !BASIC_AUTH_USERNAME) {
+		return next()
+	}
 	const authorizationHeader = req.get('Authorization')
 	if (!authorizationHeader) {
 		return res.status(400).json({
