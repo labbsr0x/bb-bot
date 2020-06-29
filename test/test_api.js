@@ -97,7 +97,7 @@ describe('Testing API App handles', () => {
 					res.body.status.should.be.eql('OK')
 				})
 		})
-		it('Should not add an app with invalid authentication', async () => {
+		it('Should not add an app using invalid authentication', async () => {
 			const appTeste = { name: 'teste3', address: 'http://teste.com' }
 			chai.request(app)
 				.post('/add/app')
@@ -111,7 +111,7 @@ describe('Testing API App handles', () => {
 					res.body.status.should.be.eql('Error')
 				})
 		})
-		it('Should not list an app with invalid authentication', async () => {
+		it('Should not list an app using invalid authentication', async () => {
 			await db.addApp('teste2', 'http://teste.com')
 			chai.request(app)
 				.get('/list/apps')
@@ -125,7 +125,7 @@ describe('Testing API App handles', () => {
 					res.body.status.should.be.eql('Error')
 				})
 		})
-		it('Should not remove an app with invalid authentication', async () => {
+		it('Should not remove an app using invalid authentication', async () => {
 			await db.addApp('teste1', 'http://teste.com')
 			chai.request(app)
 				.post('/remove/app')
@@ -169,6 +169,35 @@ describe('Testing API App handles', () => {
 					res.body.should.have.property('status')
 					res.body.status.should.be.eql('OK')
 					res.body.should.have.property('result')
+				})
+		})
+		it('Should not add a version using invalid authentication', async () => {
+			await db.addApp('teste1', 'http://teste.com')
+			chai.request(app)
+				.post('/add/version')
+				.set('Content-Type', 'application/json')
+				.auth('bot', 'inv')
+				.send({ app: 'teste1', env: 'prod', version: 'v0.1.0' })
+				.end((err, res) => {
+					res.should.have.status(400)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('Error')
+				})
+		})
+		it('Should not list versions using invalid authentication', async () => {
+			await db.addApp('teste1', 'http://teste.com')
+			const appName = 'teste1'
+			chai.request(app)
+				.get(`/list/version/${appName}`)
+				.set('Content-Type', 'application/json')
+				.auth('bot', 'inv')
+				.send()
+				.end((err, res) => {
+					res.should.have.status(400)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('Error')
 				})
 		})
 	})
