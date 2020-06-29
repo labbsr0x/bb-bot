@@ -34,6 +34,8 @@ jobs:
         ETCD_HOST: etcd
         ETCD_URLS: "http://localhost:${{ job.services.etcd.ports['2379'] }}"
         TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        BASIC_AUTH_USERNAME: bot
+        BASIC_AUTH_PASSWORD: bot
     - name: Archive production artifacts
       uses: actions/upload-artifact@v1
       with:
