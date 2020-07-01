@@ -26,6 +26,9 @@ export async function addObjApp (app, update = false) {
 	if (app.hasIps()) {
 		await app.getIps().forEach(ip => addIp(app.getName(), ip))
 	}
+	if (app.hasEnvs()) {
+		await app.getEnvs().forEach(appEnv => addVersionToApp(app.getName(), appEnv.getName(), appEnv.getVersion()))
+	}
 	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0) || update) {
 		return etcd.put(`${path}`).value(JSON.stringify(app)).exec()
 	}
@@ -98,6 +101,20 @@ export async function listApps (opts = {}) {
 		return result
 	}
 	return uApps
+}
+
+/**
+ * Connects to ETCD and lists the IPs from a app
+ * @returns {Promise<string[]>}
+ */
+export function listOldApps (etcdUrl) {
+	const oldEtcd = new Etcd3({ hosts: etcdUrl })
+	return oldEtcd.getAll().prefix('/').keys().then((apps) => {
+		const uniqueApps = new Set(apps)
+		return new Promise((resolve) => {
+			resolve([...uniqueApps])
+		})
+	})
 }
 
 /**
