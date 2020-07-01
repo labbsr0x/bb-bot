@@ -3,6 +3,7 @@ import * as db from './db'
 import kbRouter from './routers/kbRouters'
 import appRouter from './routers/appRouters'
 import settingsRouter from './routers/settingsRouters'
+import migrationRouter from './routers/migrationRouters'
 import path from 'path'
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -146,5 +147,6 @@ app.post('/add/version', async (req, res) => {
 app.use('/kb', kbRouter)
 app.use('/app', appRouter)
 app.use('/settings', settingsRouter)
+app.use('/migration', migrationRouter)
 
 export default app
