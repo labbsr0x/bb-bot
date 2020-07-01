@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import Settings from './Settings'
+import AppEnv from './AppEnv'
 /* eslint-enable no-unused-vars */
 export default class App {
 	private _name: string = '';
@@ -7,6 +8,7 @@ export default class App {
 	private _namespace: string = '';
 	private _scrapePath: Array<string> = [];
 	private _ips: Array<string> = [];
+	private _envs: Array<AppEnv> = []
 
 	public getName (): string {
 		return this._name
@@ -69,6 +71,30 @@ export default class App {
 		throw Error('IP not found')
 	}
 
+	public hasEnvs (): Boolean {
+		return this._envs.length > 0
+	}
+
+	public getEnvs () : any {
+		return this._envs
+	}
+
+	public setEnv (data: any) {
+		const appEnv = AppEnv.newEnv(data)
+		if (!this._envs.find(elem => elem.getName() === appEnv.getName())) {
+			this._envs.push(appEnv)
+		}
+	}
+
+	public removeEnv (name: string) {
+		const index = this._envs.findIndex(elem => elem.getName() === name)
+		if (index > -1) {
+			this._envs.splice(index, 1)
+			return true
+		}
+		throw Error('Env not found')
+	}
+
 	public getDesc (): string {
 		return this._desc
 	}
@@ -115,6 +141,12 @@ export default class App {
 				this.setIps(data.ips)
 			}
 		}
+		if ('envs' in data) {
+			if (Array.isArray(data.envs)) {
+				console.log(data)
+				data.envs.map((env: any) => this.setEnv(env))
+			}
+		}
 	}
 
 	public dbToObj (data: any) {
@@ -123,6 +155,7 @@ export default class App {
 		this.setDesc('_desc' in data ? data._desc : '')
 		data._ips.map((ips: string) => this.setIps(ips))
 		data._scrapePath.map((path: string) => this.setScrapePath(path))
+		data._envs.map((envData: any) => this.setEnv(envData))
 	}
 
 	public getManifest (settings: Settings) : object {

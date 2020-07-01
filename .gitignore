@@ -113,3 +113,5 @@ dist
 .DS_Store
 
 dist-server/
+
+.vscode/
