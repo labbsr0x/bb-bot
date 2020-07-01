@@ -57,7 +57,8 @@ export default class App {
 	}
 
 	public setIps (ip: string) {
-		if (!this._ips.find(elem => elem === ip)) {
+		const exists = this._ips.find(elem => elem === ip)
+		if (!exists) {
 			this._ips.push(ip)
 		}
 	}

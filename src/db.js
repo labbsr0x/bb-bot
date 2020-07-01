@@ -143,7 +143,7 @@ export async function addIp (app, ip) {
 	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
 		return etcd.put(`${SERVICE_BASE_URL}/${app}/${ip}`).value('').exec()
 	}
-	throw Error('Duplicated app')
+	throw Error('Duplicated ip')
 }
 
 /**

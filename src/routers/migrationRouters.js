@@ -12,36 +12,58 @@ const loadSettings = async (req) => {
 	return null
 }
 
+const getOldApp = (string) => {
+	const nameRegex = /\/(\w*)\/(\w*)-([\w-]*)\/(.*)/
+	const nameRegexOptions = /\/([\w-]*)\/(\w*)\/(.*)/
+	let oldAppRegex = nameRegex.exec(string)
+	// app.setName('', settings)
+	if (oldAppRegex === null) {
+		oldAppRegex = nameRegexOptions.exec(string)
+		if (oldAppRegex === null) {
+			console.log('first regeex error string', string, 'oldAppReges', oldAppRegex)
+		}
+	}
+	// console.log('oldAppRegex', oldAppRegex)
+	return oldAppRegex
+}
+
 router.post('/', async (req, res) => {
 	try {
 		const settings = await loadSettings(req)
-		const apps = await db.listOldApps(req.body.etcdUrl)
-		const nameRegex = /\/(\w*)\/(\w*)-([\w-]*)\/(.*)/
-		const nameRegexOptions = /\/([\w-]*)\/(\w*)\/(.*)/
-		let ipIndex = 4
-		const requests = apps.map(async (string) => {
-			const app = new App()
-			let oldAppRegex = nameRegex.exec(string)
+		let apps = await db.listOldApps(req.body.etcdUrl)
+		apps = apps.filter(app => !app.includes('promster') && app !== '')
+		// console.log('numero de apps', apps.length)
+		const data = {}
+		apps.map(async (string) => {
+			// console.log('Passou aqui', string)
+			const oldAppRegex = getOldApp(string)
+			// console.log('string', string, oldAppRegex[oldAppRegex.length - 1])
 			// app.setName('', settings)
-			if (oldAppRegex === null) {
-				console.log('string', string, 'oldAppReges', oldAppRegex)
-				oldAppRegex = nameRegexOptions.exec(string)
-				app.setName(`${oldAppRegex[1]}`, settings)
-				ipIndex = 3
+			let name = ''
+			if (oldAppRegex.length === 4) {
+				name = `${oldAppRegex[1]}`
 			} else {
-				app.setName(`${oldAppRegex[1]}-${oldAppRegex[3]}`, settings)
+				name = `${oldAppRegex[1]}-${oldAppRegex[3]}`
 			}
+			if (!(name in data)) {
+				data[name] = { ips: [] }
+			}
+			data[name].ips.push(oldAppRegex[oldAppRegex.length - 1])
+		})
+		for (const keys in data) {
+			const app = new App()
+			app.setName(keys, settings)
 			try {
 				const oldApp = await db.loadApps(app.getName()).catch(e => { throw e })
-				oldApp.setIps(oldAppRegex[ipIndex])
-				return db.addObjApp(oldApp, true).catch(e => { throw e })
+				// console.log('get name', app.getName())
+				data[keys].ips.map(ip => oldApp.setIps(ip))
+				await db.addObjApp(oldApp, true).catch(e => { throw e })
 			} catch (err) {
-				console.log('error on find app', err)
-				app.setIps(oldAppRegex[ipIndex])
-				return db.addObjApp(app).catch(e => { throw e })
+				// console.log('error on find app', err)
+				data[keys].ips.map(ip => app.setIps(ip))
+				await db.addObjApp(app).catch(e => { throw e })
 			}
-		})
-		await Promise.all(requests)
+		}
 		res.status(200).json({
 			status: 'OK'
 		})
