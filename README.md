@@ -24,6 +24,14 @@ The example client app `bb-promster` cluster will get registered to the **Big Br
 
 Also, access `http://localhost:3000/test` on your browser to dispatch test alerts and see if you get them at your Telegram chat. 
 
+# Basic Auth
+
+It's possible to configure a basic auth to provide security to the API:
+
+1. Set the environment variable `BASIC_AUTH_USERNAME` with the value of the desired username
+2. Set the environment variable `BASIC_AUTH_PASSWORD` with the value of the desired password
+
+Now, to complete an API request is necessary to have a basic auth with valid credentials. If these environment variables weren't set, the authentication is not required.
 
 # Big Brother
 
