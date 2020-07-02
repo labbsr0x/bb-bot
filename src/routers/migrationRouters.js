@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
 		const settings = await loadSettings(req)
 		let apps = await db.listOldApps(req.body.etcdUrl)
 		apps = apps.filter(app => !app.includes('promster') && app !== '')
-		// console.log('numero de apps', apps.length)
+		console.log('numero de apps', apps.length)
 		const data = {}
 		apps.map(async (string) => {
 			// console.log('Passou aqui', string)
@@ -41,26 +41,33 @@ router.post('/', async (req, res) => {
 			// app.setName('', settings)
 			let name = ''
 			if (oldAppRegex.length === 4) {
-				name = `${oldAppRegex[1]}`
+				name = `${oldAppRegex[1]}-${oldAppRegex[2]}`
 			} else {
-				name = `${oldAppRegex[1]}-${oldAppRegex[3]}`
+				name = `${oldAppRegex[1]}-${oldAppRegex[2]}-${oldAppRegex[3]}`
 			}
 			if (!(name in data)) {
-				data[name] = { ips: [] }
+				data[name] = { ips: [], envs: [] }
 			}
+			data[name].envs.push({
+				name: oldAppRegex[2]
+			})
 			data[name].ips.push(oldAppRegex[oldAppRegex.length - 1])
 		})
 		for (const keys in data) {
+			console.log('keys', keys)
+		}
+		for (const keys in data) {
 			const app = new App()
 			app.setName(keys, settings)
+			console.log('name', app.getName())
 			try {
 				const oldApp = await db.loadApps(app.getName()).catch(e => { throw e })
 				// console.log('get name', app.getName())
-				data[keys].ips.map(ip => oldApp.setIps(ip))
+				oldApp.jsonToArrays(data[keys])
 				await db.addObjApp(oldApp, true).catch(e => { throw e })
 			} catch (err) {
 				// console.log('error on find app', err)
-				data[keys].ips.map(ip => app.setIps(ip))
+				app.jsonToArrays(data[keys])
 				await db.addObjApp(app).catch(e => { throw e })
 			}
 		}
@@ -68,7 +75,7 @@ router.post('/', async (req, res) => {
 			status: 'OK'
 		})
 	} catch (err) {
-		console.log('error', err)
+		console.log('error register', err)
 		res.status(400).json({
 			status: 'Err',
 			message: err.message

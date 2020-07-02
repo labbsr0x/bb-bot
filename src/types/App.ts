@@ -124,10 +124,7 @@ export default class App {
 		return app
 	}
 
-	public jsonToApp (data: any, settings?: Settings) {
-		this.setNamespace('namespace' in data ? data.namespace : '')
-		this.setDesc('desc' in data ? data.desc : '')
-		this.setName(settings ? data : 'name' in data ? data.name : '', settings)
+	public jsonToArrays (data: any) {
 		if ('scrapePath' in data) {
 			if (Array.isArray(data.scrapePath)) {
 				data.scrapePath.map((path: string) => this.setScrapePath(path))
@@ -144,10 +141,21 @@ export default class App {
 		}
 		if ('envs' in data) {
 			if (Array.isArray(data.envs)) {
-				console.log(data)
 				data.envs.map((env: any) => this.setEnv(env))
 			}
 		}
+	}
+
+	public jsonToApp (data: any, settings?: Settings, edit = false) {
+		this.setNamespace('namespace' in data ? data.namespace : '')
+		this.setDesc('desc' in data ? data.desc : '')
+		if (edit && !this.getName()) {
+			this.setName(settings ? data : 'name' in data ? data.name : '', settings)
+		} else if (!edit) {
+			this.setName(settings ? data : 'name' in data ? data.name : '', settings)
+		}
+		this.setName(settings ? data : 'name' in data ? data.name : '', settings)
+		this.jsonToArrays(data)
 	}
 
 	public dbToObj (data: any) {
