@@ -13,8 +13,10 @@ const { messageHandler } = require('./agent')
 const { alert } = require('./alert')
 const { LANGUAGE } = require('./environment')
 const { isValidAuth } = require('./auth')
+const { Monitor } = require('@labbsr0x/express-monitor')
 
 const app = express()
+Monitor.init(app, true)
 
 i18n.configure({
 	directory: path.join(__dirname, '/locales'),
