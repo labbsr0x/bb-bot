@@ -16,7 +16,12 @@ router.get('/', async (req, res) => {
 	try {
 		const query = 'name' in req.query ? req.query.name : ''
 		const apps = await db.loadApps(query).catch(e => { throw e })
-		const ipsTotal = apps.map(app => app.getIps().length).reduce((a, b) => a + b, 0)
+		let ipsTotal = 0
+		if (Array.isArray(apps)) {
+			ipsTotal = apps.map(app => app.getIps().length).reduce((a, b) => a + b, 0)
+		} else {
+			ipsTotal = apps.getIps().length
+		}
 		res.status(200).json({
 			status: 'OK',
 			result: apps,
