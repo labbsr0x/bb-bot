@@ -1,10 +1,13 @@
 const DEFAULT_IMAGE = 'labbsr0x/bb-promster'
+const DEFAULT_TAG = 'latest'
+
 export default class Settings {
 	private _etcdService: string = '';
 	private _namespace: string = '';
 	private _nameTemplate: string = '';
 	private _remoteWrite: string = '';
 	private _dockerImage: string = '';
+	private _dockerTag: string = '';
 
 	public setEtcdService (service : string) {
 		this._etcdService = service
@@ -46,12 +49,21 @@ export default class Settings {
 		return this._dockerImage
 	}
 
+	public setDockerTag (tag: string) {
+		this._dockerTag = tag
+	}
+
+	public getDockerTag () {
+		return this._dockerTag
+	}
+
 	public jsonToObj (data: any) {
 		this.setNamespace('namespace' in data ? data.namespace : '')
 		this.setTemplate('template' in data ? data.template : '')
 		this.setEtcdService('etcd' in data ? data.etcd : '')
 		this.setRemoteWrite('remote' in data ? data.remote : '')
 		this.setDockerImage('image' in data ? data.image : DEFAULT_IMAGE)
+		this.setDockerTag('tag' in data ? data.tag : DEFAULT_TAG)
 	}
 
 	public dbToObj (data: any) {
@@ -60,5 +72,6 @@ export default class Settings {
 		this.setEtcdService('_etcdService' in data ? data._etcdService : '')
 		this.setRemoteWrite('_remoteWrite' in data ? data._remoteWrite : '')
 		this.setDockerImage('_dockerImage' in data ? data._dockerImage : DEFAULT_IMAGE)
+		this.setDockerTag('_dockerTag' in data ? data._dockerTag : DEFAULT_TAG)
 	}
 }
