@@ -7,6 +7,8 @@ export default class App {
 	private _desc: string = '';
 	private _namespace: string = '';
 	private _scrapePath: Array<string> = [];
+	private _scheme: string = 'http';
+	private _tls: boolean = false;
 	private _ips: Array<string> = [];
 	private _envs: Array<AppEnv> = []
 
@@ -15,7 +17,7 @@ export default class App {
 	}
 
 	public setName (name: any, settings?: Settings) {
-		if (settings && settings.geTemplate()) {
+		if (settings && settings.geTemplate() !== '' && settings.geTemplate().length > 0) {
 			const regex = /\{(.*?)\}/g
 			let matches = null
 			const output = []
@@ -28,7 +30,7 @@ export default class App {
 			}
 			this._name = newName
 		} else {
-			this._name = name
+			this._name = typeof name === 'object' && name !== null && 'name' in name ? name.name : name
 		}
 	}
 
@@ -104,6 +106,22 @@ export default class App {
 		this._desc = descName
 	}
 
+	public getScheme (): string {
+		return this._scheme
+	}
+
+	public setScheme (scheme: string) {
+		this._scheme = scheme
+	}
+
+	public getTls (): boolean {
+		return this._tls
+	}
+
+	public setTls (tls: boolean) {
+		this._tls = tls
+	}
+
 	public setNamespace (namespace : string) {
 		this._namespace = namespace
 	}
@@ -155,6 +173,12 @@ export default class App {
 			this.setName(settings ? data : 'name' in data ? data.name : '', settings)
 		}
 		this.setName(settings ? data : 'name' in data ? data.name : '', settings)
+		if ('scheme' in data) {
+			this.setScheme(data.scheme)
+		}
+		if ('tls' in data) {
+			this.setTls(data.tls)
+		}
 		this.jsonToArrays(data)
 	}
 
