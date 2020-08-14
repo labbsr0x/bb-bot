@@ -1,3 +1,30 @@
+import dotenv from 'dotenv'
+import fs from 'fs'
+import path from 'path'
+
+dotenv.config()
+
+const fileEnv = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env'
+
+// get the env variables from the .env file relative to the current NODE_ENV
+let ENV_VARS = {}
+try {
+	console.log('dir_name', path.join(__dirname, '..'))
+	ENV_VARS = dotenv.parse(fs.readFileSync(path.resolve(path.join(__dirname, '..'), fileEnv)))
+} catch (err) {
+	console.log('err', err)
+	ENV_VARS = {}
+}
+console.log('Env vars', ENV_VARS)
+const valuesEnvToReplace = () => {
+	return Object.entries(ENV_VARS).reduce((acc, [key, val]) => {
+		process.env[key] = JSON.stringify(val)
+		return acc
+	}, {})
+}
+console.log('process env', process.env)
+valuesEnvToReplace()
+
 const ETCD_URLS = process.env.ETCD_URLS
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
 let LANGUAGE = process.env.LANGUAGE
