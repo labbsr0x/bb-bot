@@ -124,8 +124,8 @@ router.post('/teste', upload.single('data'), async (req, res) => {
 		data.map(t => {
 			const line = t.split(';')
 			if (line.length === 4) {
-				// console.log('line', line)
-				if (line[3].search(req.body.prefixContext)) {
+				//console.log('line', line[3].search(req.body.prefixContext))
+				if (line[3].search(req.body.prefixContext) >= 0) {
 					const context = line[3].replace(`${req.body.prefixContext}-`, '').replace('\r', '')
 					const ip = `${line[0]}.${req.body.sufix}:${line[2]}`
 					const command = `etcdctl put '/${req.body.platform}/${req.body.environment}-${context}/${ip}' ''`
