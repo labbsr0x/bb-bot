@@ -1,6 +1,12 @@
 import express from 'express'
 import App from '../types/App'
 import * as db from '../db'
+import csv from 'csv-parser'
+import fs from 'fs'
+import path from 'path'
+import multer from 'multer'
+
+const upload = multer({ dest: 'files/' })
 
 const router = express.Router()
 
@@ -76,6 +82,47 @@ router.post('/', async (req, res) => {
 		})
 	} catch (err) {
 		console.log('error register', err)
+		res.status(400).json({
+			status: 'Err',
+			message: err.message
+		})
+	}
+})
+
+router.post('/teste', upload.single('data'), async (req, res) => {
+	console.dir(req.file)
+	console.log('data', req.body)
+	const commands = []
+	const data = []
+	const fileName = path.join(__dirname, '..', '..', 'files', req.file.filename)
+	try {
+		const fd = fs.createReadStream(path.resolve(fileName))
+		fd.pipe(csv({ separator: ';' }))
+		const end = new Promise(function (resolve, reject) {
+			fd.on('error', reject) // or something like that. might need to close `hash`
+			fd.on('data', (row) => {
+				console.log(row)
+				data.push(row)
+			})
+			fd.on('end', () => {
+				console.log('CSV file successfully processed')
+			})
+		})
+		const teste = await end
+		console.log('teste', teste)
+		data.map(t => {
+			if (t.Column4.search('cfe')) {
+				const context = t.Column4.replace('cfe-', '')
+				const command = `etcdctl put /${req.body.platform}/${req.body.environment}/${context}/${t.Column1}.dispositivos.bb.com.br:${t.Column3}`
+				commands.push(command)
+			}
+		})
+		res.status(200).json({
+			status: 'OK',
+			commands: commands
+		})
+	} catch (err) {
+		console.error('error register', err)
 		res.status(400).json({
 			status: 'Err',
 			message: err.message

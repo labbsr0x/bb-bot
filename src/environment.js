@@ -15,7 +15,6 @@ try {
 	console.log('err', err)
 	ENV_VARS = {}
 }
-console.log('Env vars', ENV_VARS)
 const valuesEnvToReplace = () => {
 	return Object.entries(ENV_VARS).reduce((acc, [key, val]) => {
 		process.env[key] = JSON.stringify(val)
