@@ -1,10 +1,14 @@
 import express from 'express'
 import App from '../types/App'
 import * as db from '../db'
-import csv from 'csv-parser'
+// import csv from 'csv-parser'
 import fs from 'fs'
 import path from 'path'
 import multer from 'multer'
+import util from 'util'
+import stream from 'stream'
+
+const pipeline = util.promisify(stream.pipeline)
 
 const upload = multer({ dest: 'files/' })
 
@@ -96,25 +100,37 @@ router.post('/teste', upload.single('data'), async (req, res) => {
 	const data = []
 	const fileName = path.join(__dirname, '..', '..', 'files', req.file.filename)
 	try {
-		const fd = fs.createReadStream(path.resolve(fileName))
-		fd.pipe(csv({ separator: ';' }))
-		const end = new Promise(function (resolve, reject) {
-			fd.on('error', reject) // or something like that. might need to close `hash`
-			fd.on('data', (row) => {
-				console.log(row)
-				data.push(row)
-			})
-			fd.on('end', () => {
-				console.log('CSV file successfully processed')
-			})
-		})
-		const teste = await end
-		console.log('teste', teste)
+		// const fd = fs.createReadStream(path.resolve(fileName))
+		// fd.pipe(csv({ separator: ';' }))
+		const run = async function () {
+			await pipeline(
+				fs.createReadStream(path.resolve(fileName)),
+				// csv({ separator: ';' }),
+				async function * (source) {
+					source.setEncoding('utf8') // Work with strings rather than `Buffer`s.
+					for await (const chunk of source) {
+						const t = chunk.split('\n')
+						t.map(d => data.push(d))
+					}
+				}
+			)
+			console.log('Pipeline succeeded')
+		}
+		await run()
+		if (req.body.header === 'true') {
+			data.shift()
+		}
+		console.log('data length', data.length)
 		data.map(t => {
-			if (t.Column4.search('cfe')) {
-				const context = t.Column4.replace('cfe-', '')
-				const command = `etcdctl put /${req.body.platform}/${req.body.environment}/${context}/${t.Column1}.dispositivos.bb.com.br:${t.Column3}`
-				commands.push(command)
+			const line = t.split(';')
+			if (line.length === 4) {
+				// console.log('line', line)
+				if (line[3].search(req.body.prefixContext)) {
+					const context = line[3].replace(`${req.body.prefixContext}-`, '')
+					const ip = `${line[0]}.${req.body.sufix}:${line[2]}`
+					const command = `etcdctl put /${req.body.platform}/${req.body.environment}/${context}/${ip}`
+					commands.push(command)
+				}
 			}
 		})
 		res.status(200).json({
