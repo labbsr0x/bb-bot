@@ -15,7 +15,7 @@ var assert = chai.assert
 
 chai.should()
 
-describe('Testing app handles', () => {
+describe('Testing app object', () => {
 	describe('Apps', async () => {
 		it('add by name', async () => {
 			const app = new App()

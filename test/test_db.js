@@ -15,6 +15,9 @@ var assert = chai.assert
 chai.should()
 
 describe('Testing db handles', () => {
+	before(async () => {
+		await db.deleteAll()
+	})
 	afterEach(async () => {
 		await db.deleteAll()
 	})
