@@ -49,7 +49,7 @@ export async function loadApps (appName) {
 		app.dbToObj(JSON.parse(objects[key]))
 		result.push(app)
 	}
-	if (result.length === 0) throw Error('No app found')
+	if (result.length === 0) throw Error(`No app found for name ${appName}`)
 	if (appName) {
 		return result[0]
 	}
