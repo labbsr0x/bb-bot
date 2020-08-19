@@ -175,32 +175,17 @@ export async function addApp (name, address) {
 }
 
 /**
- * Adds a description for an app
- * @param {String} name the app name
- * @param {String} desc the desc of the app
- * @returns {Promise<IPutResponse>}
- */
-export async function addDescApp (name, desc) {
-	const keyExists = await etcd.getAll().prefix(`${DESC_BASE_URL}/${name}/${desc}`).keys()
-	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
-		return etcd.put(`${DESC_BASE_URL}/${name}/${desc}`).value('').exec()
-	}
-	throw Error('Duplicated description')
-}
-
-/**
  * Stops the monitoring of the application by Big Brother
  * @param {String} name the name of the application to be removed
  * @returns {Promise<IDeleteRangeResponse>}
  */
 export async function rmApp (app, fullApp=true) {
 	try {
-		let r = await etcd.delete().all().prefix(`${DESC_BASE_URL}/${app}`).exec()
-		r = await etcd.delete().key(`${APP_BASE_URL}/${app}`).exec()
+		let r = await etcd.delete().key(`${APP_BASE_URL}/${app}`).exec()
 		if (r.deleted === '0' && fullApp) {
 			throw Error(`Cannot delete app ${app}`)
 		}
-		r = etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}`).exec()
+		r = etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}/`).exec()
 	} catch (err) {
 		throw Error(`Cannot delete app ${app}`)
 	}

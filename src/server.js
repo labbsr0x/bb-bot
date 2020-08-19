@@ -59,9 +59,6 @@ app.post('/alertmanager', async (req, res) => {
 app.post('/add/app', async (req, res) => {
 	try {
 		await db.addApp(req.body.name, req.body.address)
-		if ('desc' in req.body) {
-			await db.addDescApp(req.body.name, req.body.desc)
-		}
 		res.status(200).json({
 			status: 'OK'
 		})
