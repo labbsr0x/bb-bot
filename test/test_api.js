@@ -227,7 +227,7 @@ describe('Testing API App handles', () => {
 		})
 		it('Delete app', async () => {
 			const appObj = {
-				name: 'testserver7',
+				name: 'testserver8',
 				desc: 'Testando salvar um app inteiro',
 				ips: [
 					'172.2.0.0:8000',
@@ -237,10 +237,9 @@ describe('Testing API App handles', () => {
 			const appOb = App.createApp(appObj)
 			await db.addObjApp(appOb).catch(e => { throw e })
 			chai.request(app)
-				.delete('/app')
+				.delete('/app?name=testserver8')
 				.set('Content-Type', 'application/json')
 				.auth('bot', 'bot')
-				.send({ name: 'testserver7' })
 				.end((err, res) => {
 					res.should.have.status(200)
 					res.body.should.be.a('object')
