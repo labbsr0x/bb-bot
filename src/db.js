@@ -194,9 +194,16 @@ export async function addDescApp (name, desc) {
  * @returns {Promise<IDeleteRangeResponse>}
  */
 export async function rmApp (app) {
-	await etcd.delete().all().prefix(`${DESC_BASE_URL}/${app}`).exec()
-	await etcd.delete().all().prefix(`${APP_BASE_URL}/${app}`).exec()
-	return etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}`).exec()
+	try {
+		let r = await etcd.delete().all().prefix(`${DESC_BASE_URL}/${app}`).exec()
+		r = await etcd.delete().key(`${APP_BASE_URL}/${app}`).exec()
+		if (r.deleted === '0') {
+			throw Error(`Cannot delete app ${app}`)
+		}
+		r = etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}`).exec()
+	} catch (err) {
+		throw Error(`Cannot delete app ${app}`)
+	}
 }
 
 /**

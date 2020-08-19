@@ -79,13 +79,15 @@ router.put('/', async (req, res) => {
 
 router.delete('/', async (req, res) => {
 	try {
-		console.log('deleting app')
-		await db.rmApp(req.params.app)
+		await db.rmApp(req.query.name)
 		res.status(200).json({
 			status: 'OK'
 		})
 	} catch (err) {
 		console.log('error', err)
+		res.status(400).json({
+			status: 'Error'
+		})
 	}
 })
 
@@ -112,7 +114,7 @@ router.patch('/ip', async (req, res) => {
 router.delete('/ip', async (req, res) => {
 	try {
 		const settings = await loadSettings(req)
-		const app = App.createApp(req.body, settings)
+		const app = App.createApp(req.query, settings)
 		const oldApp = await db.loadApps(app.getName()).catch(e => { throw e })
 		app.getIps().map(ip => oldApp.removeIps(ip))
 		await db.addObjApp(oldApp, true).catch(e => { throw e })
