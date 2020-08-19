@@ -21,10 +21,11 @@ chai.should()
 
 describe('Testing API App handles', () => {
 	afterEach(async () => {
-		await db.rmApp('teste1')
-		await db.rmApp('teste2')
-		await db.rmApp('teste3')
-		await db.rmApp('teste4')
+		try {
+			await db.deleteAll()
+		} catch (err) {
+			console.log('error', err)
+		}
 	})
 	describe('Apps', async () => {
 		it('should add app', async () => {
@@ -225,6 +226,16 @@ describe('Testing API App handles', () => {
 				})
 		})
 		it('Delete app', async () => {
+			const appObj = {
+				name: 'testserver7',
+				desc: 'Testando salvar um app inteiro',
+				ips: [
+					'172.2.0.0:8000',
+					'172.2.0.1:8000'
+				]
+			}
+			const appOb = App.createApp(appObj)
+			await db.addObjApp(appOb).catch(e => { throw e })
 			chai.request(app)
 				.delete('/app')
 				.set('Content-Type', 'application/json')

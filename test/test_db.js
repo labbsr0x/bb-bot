@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import * as db from '../dist-server/db'
+import App from '../dist-server/types/App'
 const sinon = require('sinon')
 var chai = require('chai')
 var chaiAsPromised = require('chai-as-promised')
@@ -15,11 +16,7 @@ chai.should()
 
 describe('Testing db handles', () => {
 	afterEach(async () => {
-		await db.rmApp('teste1')
-		await db.rmApp('teste2')
-		await db.rmApp('teste3')
-		await db.rmApp('teste4')
-		await db.rmApp('')
+		await db.deleteAll()
 	})
 	describe('addApp', async () => {
 		it('should not return exception', async () => {
@@ -39,6 +36,7 @@ describe('Testing db handles', () => {
 	})
 	describe('subscribeToApp', async () => {
 		it('should return chatIds from subscriptions', async () => {
+			await db.subscribeToApp('teste', '12214545')
 			return assert.eventually.equal(Promise.resolve(db.listSubscriptions('teste')), '12214545')
 			// return Promise.resolve(listSubscriptions("teste")).should.eventually.equal(['12214545']);
 		})
@@ -50,6 +48,9 @@ describe('Testing db handles', () => {
 	})
 	describe('rmApp', async () => {
 		it('should exclude the app', async () => {
+			let app = new App()
+			app.setName('teste')
+			await db.addObjApp(app)
 			return Promise.resolve(db.rmApp('teste')).should.be.fulfilled
 		})
 	})
