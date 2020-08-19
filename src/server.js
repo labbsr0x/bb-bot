@@ -75,7 +75,7 @@ app.post('/add/app', async (req, res) => {
 
 app.post('/remove/app', async (req, res) => {
 	try {
-		await db.rmApp(req.body.name)
+		await db.rmApp(req.body.name, false)
 		res.status(200).json({
 			status: 'OK'
 		})

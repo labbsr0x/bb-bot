@@ -193,11 +193,11 @@ export async function addDescApp (name, desc) {
  * @param {String} name the name of the application to be removed
  * @returns {Promise<IDeleteRangeResponse>}
  */
-export async function rmApp (app) {
+export async function rmApp (app, fullApp=true) {
 	try {
 		let r = await etcd.delete().all().prefix(`${DESC_BASE_URL}/${app}`).exec()
 		r = await etcd.delete().key(`${APP_BASE_URL}/${app}`).exec()
-		if (r.deleted === '0') {
+		if (r.deleted === '0' && fullApp) {
 			throw Error(`Cannot delete app ${app}`)
 		}
 		r = etcd.delete().all().prefix(`${SERVICE_BASE_URL}/${app}`).exec()
@@ -314,4 +314,11 @@ export async function loadSettings (namespace) {
 export function deleteSettings (settings) {
 	const path = `${SETTINGS_BASE_URL}/${settings.getNamespace()}`
 	return etcd.delete().all().prefix(path).exec()
+}
+
+/**
+ * Deletes all data on Etcd, just for test porposes
+ */
+export function deleteAll () {
+	return etcd.delete().all().exec()
 }
