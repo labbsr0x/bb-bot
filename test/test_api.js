@@ -188,5 +188,4 @@ describe('Testing API handles', () => {
 				})
 		})
 	})
-	
 })

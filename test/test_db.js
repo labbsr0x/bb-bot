@@ -15,6 +15,7 @@ var assert = chai.assert
 chai.should()
 
 describe('Testing db handles', () => {
+	/* eslint-disable no-undef */
 	before(async () => {
 		await db.deleteAll()
 	})
@@ -51,7 +52,7 @@ describe('Testing db handles', () => {
 	})
 	describe('rmApp', async () => {
 		it('should exclude the app', async () => {
-			let app = new App()
+			const app = new App()
 			app.setName('teste')
 			await db.addObjApp(app)
 			return Promise.resolve(db.rmApp('teste')).should.be.fulfilled
