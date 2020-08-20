@@ -32,7 +32,7 @@ export async function addObjApp (app, update = false) {
 	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0) || update) {
 		return etcd.put(`${path}`).value(JSON.stringify(app)).exec()
 	}
-	throw Error('Duplicated app')
+	throw Error(`Duplicated app: ${app.getName()}`)
 }
 
 /**
@@ -171,7 +171,7 @@ export async function addApp (name, address) {
 	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
 		return etcd.put(`${SERVICE_BASE_URL}/${name}/${address}`).value('').exec()
 	}
-	throw Error('Duplicated app')
+	throw Error(`Duplicated service ${address}`)
 }
 
 /**
@@ -179,7 +179,7 @@ export async function addApp (name, address) {
  * @param {String} name the name of the application to be removed
  * @returns {Promise<IDeleteRangeResponse>}
  */
-export async function rmApp (app, fullApp=true) {
+export async function rmApp (app, fullApp = true) {
 	try {
 		let r = await etcd.delete().key(`${APP_BASE_URL}/${app}`).exec()
 		if (r.deleted === '0' && fullApp) {
