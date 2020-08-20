@@ -32,7 +32,7 @@ export async function addObjApp (app, update = false) {
 	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0) || update) {
 		return etcd.put(`${path}`).value(JSON.stringify(app)).exec()
 	}
-	throw Error('Duplicated app')
+	throw Error(`Duplicated app: ${app.getName()}`)
 }
 
 /**
@@ -173,7 +173,7 @@ export async function addApp (name, address) {
 	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
 		return etcd.put(`${SERVICE_BASE_URL}/${name}/${address}`).value('').exec()
 	}
-	throw Error('Duplicated app')
+	throw Error(`Duplicated service ${address}`)
 }
 
 /**
@@ -308,15 +308,4 @@ export function deleteSettings (settings) {
  */
 export function deleteAll () {
 	return etcd.delete().all().exec()
-}
-
-function getServiceBaseUrl (promsterLevel) {
-	let serviceBaseUrl
-	if (promsterLevel !== 1) {
-		serviceBaseUrl = `/services-promster-l${promsterLevel}`
-	} else {
-		serviceBaseUrl = '/services'
-	}
-
-	return serviceBaseUrl
 }
