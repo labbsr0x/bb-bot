@@ -138,10 +138,12 @@ export function listIPs (app) {
  * @param {String} ip the app ip
  * @returns {Promise<IPutResponse>}
  */
-export async function addIp (app, ip) {
-	const keyExists = await etcd.getAll().prefix(`${SERVICE_BASE_URL}/${app}/${ip}`).keys()
+export async function addIp (app, ip, promsterLevel) {
+	const serviceBaseUrl = getServiceBaseUrl(promsterLevel)
+	console.log(serviceBaseUrl)
+	const keyExists = await etcd.getAll().prefix(`${serviceBaseUrl}/${app}/${ip}`).keys()
 	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
-		return etcd.put(`${SERVICE_BASE_URL}/${app}/${ip}`).value('').exec()
+		return etcd.put(`${serviceBaseUrl}/${app}/${ip}`).value('').exec()
 	}
 	throw Error('Duplicated ip')
 }
@@ -179,7 +181,7 @@ export async function addApp (name, address) {
  * @param {String} name the name of the application to be removed
  * @returns {Promise<IDeleteRangeResponse>}
  */
-export async function rmApp (app, fullApp=true) {
+export async function rmApp (app, fullApp = true) {
 	try {
 		let r = await etcd.delete().key(`${APP_BASE_URL}/${app}`).exec()
 		if (r.deleted === '0' && fullApp) {
@@ -306,4 +308,15 @@ export function deleteSettings (settings) {
  */
 export function deleteAll () {
 	return etcd.delete().all().exec()
+}
+
+function getServiceBaseUrl (promsterLevel) {
+	let serviceBaseUrl
+	if (promsterLevel !== 1) {
+		serviceBaseUrl = `/services-promster-l${promsterLevel}`
+	} else {
+		serviceBaseUrl = '/services'
+	}
+
+	return serviceBaseUrl
 }
