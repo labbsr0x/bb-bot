@@ -141,8 +141,8 @@ export default class App {
 		return this._level
 	}
 
-	public setLevel (level : number ) {
-		this._level = level 
+	public setLevel (level: number) {
+		this._level = level
 	}
 
 	static createApp (data: any, settings?: Settings) {
@@ -207,7 +207,7 @@ export default class App {
 		const deploymentManifest = require('../deployments/bb-promster.json')
 		const deploy = { ...deploymentManifest }
 		const etcdService = settings.getEtcdService()
-		const registryEtcdBase = this._level == 1 ? '/services' : `/services-promster-l${this._level}`
+		const registryEtcdBase = this._level === 1 ? '/services' : `/services-promster-l${this._level}`
 		const envVars = [
 			{
 				name: 'REGISTRY_ETCD_URL',
