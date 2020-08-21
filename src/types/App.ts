@@ -11,6 +11,7 @@ export default class App {
 	private _tls: boolean = false;
 	private _ips: Array<string> = [];
 	private _envs: Array<AppEnv> = []
+	private _level: number = 1;
 
 	public getName (): string {
 		return this._name
@@ -136,6 +137,14 @@ export default class App {
 		return 'default'
 	}
 
+	public getLevel ():number {
+		return this._level
+	}
+
+	public setLevel (level : number ) {
+		this._level = level 
+	}
+
 	static createApp (data: any, settings?: Settings) {
 		const app = new App()
 		app.jsonToApp(data, settings)
@@ -179,6 +188,9 @@ export default class App {
 		if ('tls' in data) {
 			this.setTls(data.tls)
 		}
+		if ('level' in data) {
+			this.setLevel(data.level)
+		}
 		this.jsonToArrays(data)
 	}
 
@@ -195,6 +207,7 @@ export default class App {
 		const deploymentManifest = require('../deployments/bb-promster.json')
 		const deploy = { ...deploymentManifest }
 		const etcdService = settings.getEtcdService()
+		const registryEtcdBase = this._level == 1 ? '/services' : `/services-promster-l${this._level}`
 		const envVars = [
 			{
 				name: 'REGISTRY_ETCD_URL',
@@ -206,15 +219,11 @@ export default class App {
 			},
 			{
 				name: 'REGISTRY_ETCD_BASE',
-				value: '/services'
-			},
-			{
-				name: 'REGISTRY_ETCD_BASE',
-				value: '/services'
+				value: registryEtcdBase
 			},
 			{
 				name: 'BB_PROMSTER_LEVEL',
-				value: '1'
+				value: this._level
 			},
 			{
 				name: 'ETCD_URLS',
@@ -222,7 +231,7 @@ export default class App {
 			},
 			{
 				name: 'SCRAPE_ETCD_PATH',
-				value: `/services/${this._name}`
+				value: `${registryEtcdBase}/${this._name}`
 			}
 		]
 		if (settings.geRemoteWrite()) {
