@@ -198,6 +198,9 @@ export default class App {
 		this.setNamespace('_namespace' in data ? data._namespace : '')
 		this.setName('_name' in data ? data._name : '')
 		this.setDesc('_desc' in data ? data._desc : '')
+		this.setTls('_tls' in data ? data._tls : false)
+		this.setScheme('_scheme' in data ? data._scheme : 'http')
+		this.setLevel('_level' in data ? data._level : 1)
 		data._ips.map((ips: string) => this.setIps(ips))
 		data._scrapePath.map((path: string) => this.setScrapePath(path))
 		data._envs.map((envData: any) => this.setEnv(envData))
@@ -207,7 +210,7 @@ export default class App {
 		const deploymentManifest = require('../deployments/bb-promster.json')
 		const deploy = { ...deploymentManifest }
 		const etcdService = settings.getEtcdService()
-		const registryEtcdBase = this._level === 1 ? '/services' : `/services-promster-l${this._level}`
+		const registryEtcdBase = this.getServiceBaseUrl()
 		const envVars = [
 			{
 				name: 'REGISTRY_ETCD_URL',
