@@ -51,6 +51,30 @@ describe('Testing API App handles', () => {
 					res.body.status.should.be.eql('OK')
 				})
 		})
+		it('Should add a full app with promster level', async () => {
+			const appObj = {
+				name: 'testserver13',
+				desc: 'Testando salvar um app inteiro',
+				ips: [
+					'172.2.0.0:8000',
+					'172.2.0.1:8000'
+				],
+				level: 2
+
+			}
+			chai.request(app)
+				.post('/app')
+				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
+				.send(appObj)
+				.end((err, res) => {
+					res.should.have.status(200)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.result._level.should.be.equals(2)
+					res.body.status.should.be.eql('OK')
+				})
+		})
 		it('Delete app', async () => {
 			const appObj = {
 				name: 'testserver8',
