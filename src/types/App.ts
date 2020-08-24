@@ -137,7 +137,7 @@ export default class App {
 		return 'default'
 	}
 
-	public getLevel ():number {
+	public getLevel (): number {
 		return this._level
 	}
 
@@ -189,7 +189,7 @@ export default class App {
 			this.setTls(data.tls)
 		}
 		if ('level' in data) {
-			this.setLevel(data.level)
+			this.setLevel(parseInt(data.level))
 		}
 		this.jsonToArrays(data)
 	}
@@ -247,5 +247,13 @@ export default class App {
 		deploy.spec.template.spec.containers[0].image = settings.getDockerImage()
 		deploy.spec.template.spec.containers[0].env = envVars
 		return deploy
+	}
+
+	public getServiceBaseUrl () {
+		if (this.getLevel() === 1) {
+			return '/services'
+		} else {
+			return `/services-promster-l${this._level}`
+		}
 	}
 }

@@ -24,7 +24,7 @@ export async function addObjApp (app, update = false) {
 		await deleteIp(app.getName())
 	}
 	if (app.hasIps()) {
-		await app.getIps().forEach(ip => addIp(app.getName(), ip, app.getLevel()))
+		await app.getIps().forEach(ip => addIp(app, ip))
 	}
 	if (app.hasEnvs()) {
 		await app.getEnvs().forEach(appEnv => addVersionToApp(app.getName(), appEnv.getName(), appEnv.getVersion()))
@@ -134,16 +134,16 @@ export function listIPs (app) {
 
 /**
  * Adds a new ip to be watch by promster
- * @param {String} app the service name
+ * @param {App} app the App object
  * @param {String} ip the app ip
  * @param {Number} level the bb-promster level
  * @returns {Promise<IPutResponse>}
  */
-export async function addIp (app, ip, level) {
-	const serviceBaseUrl = getServiceBaseUrl(parseInt(level))
-	const keyExists = await etcd.getAll().prefix(`${serviceBaseUrl}/${app}/${ip}`).keys()
+export async function addIp (app, ip) {
+	const serviceBaseUrl = app.getServiceBaseUrl()
+	const keyExists = await etcd.getAll().prefix(`${serviceBaseUrl}/${app.getName()}/${ip}`).keys()
 	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
-		return etcd.put(`${serviceBaseUrl}/${app}/${ip}`).value('').exec()
+		return etcd.put(`${serviceBaseUrl}/${app.getName()}/${ip}`).value('').exec()
 	}
 	throw Error('Duplicated ip')
 }
@@ -308,12 +308,4 @@ export function deleteSettings (settings) {
  */
 export function deleteAll () {
 	return etcd.delete().all().exec()
-}
-
-function getServiceBaseUrl (promsterLevel) {
-	if (promsterLevel === 1) {
-		return '/services'
-	} else {
-		return `/services-promster-l${promsterLevel}`
-	}
 }
