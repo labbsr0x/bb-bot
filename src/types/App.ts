@@ -11,6 +11,7 @@ export default class App {
 	private _tls: boolean = false;
 	private _ips: Array<string> = [];
 	private _envs: Array<AppEnv> = []
+	private _level: number = 1;
 
 	public getName (): string {
 		return this._name
@@ -136,6 +137,14 @@ export default class App {
 		return 'default'
 	}
 
+	public getLevel (): number {
+		return this._level
+	}
+
+	public setLevel (level: number) {
+		this._level = level
+	}
+
 	static createApp (data: any, settings?: Settings) {
 		const app = new App()
 		app.jsonToApp(data, settings)
@@ -179,6 +188,9 @@ export default class App {
 		if ('tls' in data) {
 			this.setTls(data.tls)
 		}
+		if ('level' in data) {
+			this.setLevel(parseInt(data.level))
+		}
 		this.jsonToArrays(data)
 	}
 
@@ -186,6 +198,9 @@ export default class App {
 		this.setNamespace('_namespace' in data ? data._namespace : '')
 		this.setName('_name' in data ? data._name : '')
 		this.setDesc('_desc' in data ? data._desc : '')
+		this.setTls('_tls' in data ? data._tls : false)
+		this.setScheme('_scheme' in data ? data._scheme : 'http')
+		this.setLevel('_level' in data ? data._level : 1)
 		data._ips.map((ips: string) => this.setIps(ips))
 		data._scrapePath.map((path: string) => this.setScrapePath(path))
 		data._envs.map((envData: any) => this.setEnv(envData))
@@ -195,6 +210,7 @@ export default class App {
 		const deploymentManifest = require('../deployments/bb-promster.json')
 		const deploy = { ...deploymentManifest }
 		const etcdService = settings.getEtcdService()
+		const registryEtcdBase = this.getServiceBaseUrl()
 		const envVars = [
 			{
 				name: 'REGISTRY_ETCD_URL',
@@ -206,15 +222,11 @@ export default class App {
 			},
 			{
 				name: 'REGISTRY_ETCD_BASE',
-				value: '/services'
-			},
-			{
-				name: 'REGISTRY_ETCD_BASE',
-				value: '/services'
+				value: registryEtcdBase
 			},
 			{
 				name: 'BB_PROMSTER_LEVEL',
-				value: '1'
+				value: this._level
 			},
 			{
 				name: 'ETCD_URLS',
@@ -222,7 +234,7 @@ export default class App {
 			},
 			{
 				name: 'SCRAPE_ETCD_PATH',
-				value: `/services/${this._name}`
+				value: `${registryEtcdBase}/${this._name}`
 			}
 		]
 		if (settings.geRemoteWrite()) {
@@ -238,5 +250,13 @@ export default class App {
 		deploy.spec.template.spec.containers[0].image = settings.getDockerImage()
 		deploy.spec.template.spec.containers[0].env = envVars
 		return deploy
+	}
+
+	public getServiceBaseUrl () {
+		if (this.getLevel() === 1) {
+			return '/services'
+		} else {
+			return `/services-promster-l${this._level}`
+		}
 	}
 }
