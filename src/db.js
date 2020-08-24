@@ -136,6 +136,7 @@ export function listIPs (app) {
  * Adds a new ip to be watch by promster
  * @param {String} app the service name
  * @param {String} ip the app ip
+ * @param {Number} level the bb-promster level
  * @returns {Promise<IPutResponse>}
  */
 export async function addIp (app, ip, level) {
