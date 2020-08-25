@@ -9,7 +9,7 @@ const SERVICE_BASE_URL = '/services'
 const APP_BASE_URL = '/apps'
 const SETTINGS_BASE_URL = '/settings'
 const DESC_BASE_URL = '/desc'
-const VERSION_URL = '/version'
+const VERSION_URL = '/versions'
 
 /**
  * Adds a new app to be watch by Big Brother
