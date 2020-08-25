@@ -140,10 +140,10 @@ export function listIPs (app) {
  * @returns {Promise<IPutResponse>}
  */
 export async function addIp (app, ip) {
-	const serviceBaseUrl = app.getServiceBaseUrl()
-	const keyExists = await etcd.getAll().prefix(`${serviceBaseUrl}/${app.getName()}/${ip}`).keys()
+	const scrapeEtcdPath = app.getEtcdScrapePath()
+	const keyExists = await etcd.getAll().prefix(`${scrapeEtcdPath}/${app.getName()}/${ip}`).keys()
 	if (!keyExists || (Array.isArray(keyExists) && keyExists.length === 0)) {
-		return etcd.put(`${serviceBaseUrl}/${app.getName()}/${ip}`).value('').exec()
+		return etcd.put(`${scrapeEtcdPath}/${app.getName()}/${ip}`).value('').exec()
 	}
 	throw Error('Duplicated ip')
 }
