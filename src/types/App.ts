@@ -211,6 +211,7 @@ export default class App {
 		const deploy = { ...deploymentManifest }
 		const etcdService = settings.getEtcdService()
 		const registryEtcdBase = this.getServiceBaseUrl()
+		const etcdScrapePath = this.getEtcdScrapePath()
 		const envVars = [
 			{
 				name: 'REGISTRY_ETCD_URL',
@@ -234,7 +235,7 @@ export default class App {
 			},
 			{
 				name: 'SCRAPE_ETCD_PATH',
-				value: `${registryEtcdBase}/${this._name}`
+				value: `${etcdScrapePath}/${this._name}`
 			}
 		]
 		if (settings.geRemoteWrite()) {
@@ -257,6 +258,14 @@ export default class App {
 			return '/services'
 		} else {
 			return `/services-promster-l${this._level}`
+		}
+	}
+
+	public getEtcdScrapePath () {
+		if (this.getLevel() === 1) {
+			return '/services'
+		} else {
+			return `/services-promster-l${this._level - 1}`
 		}
 	}
 }
