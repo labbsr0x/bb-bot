@@ -85,4 +85,10 @@ describe('Testing db handles', () => {
 			return assert.eventually.deepEqual(db.listVersions('teste2'), { prod: 'v0.1.0', dev: 'v0.0.9' })
 		})
 	})
+	describe('deleteVersion', async () => {
+		it('should delete app', async () => {
+			await db.addVersionToApp('teste2', 'prod', 'v0.1.1')
+			return Promise.resolve(db.deleteVersion('teste2', 'prod', 'v0.0.1')).should.be.fulfilled
+		})
+	})
 })

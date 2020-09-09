@@ -239,6 +239,16 @@ export function addVersionToApp (app, env, version) {
 }
 
 /**
+ * Deletes a version of an app.
+ * @param {String} app the name of the app to add a version
+ * @param {String} env the env name
+ * @param {String} version the version number
+ */
+export function deleteVersion (app, env, version) {
+	return etcd.delete().key(`${VERSION_URL}/${app}/${env}/${version}`).exec()
+}
+
+/**
  * List all app versions by env
  * @param {String} app the name of the app to add version
  * @param {String} env the env name

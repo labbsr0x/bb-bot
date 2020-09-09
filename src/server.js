@@ -143,6 +143,20 @@ app.post('/add/version', async (req, res) => {
 	}
 })
 
+app.delete('/delete/version', async (req, res) => {
+	try {
+		await db.deleteVersion(req.body.app, req.body.env, req.body.version)
+		res.status(200).json({
+			status: 'OK'
+		})
+	} catch (err) {
+		console.debug('error', err)
+		res.status(400).json({
+			status: 'Err'
+		})
+	}
+})
+
 app.use('/kb', kbRouter)
 app.use('/app', appRouter)
 app.use('/settings', settingsRouter)
