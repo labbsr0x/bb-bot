@@ -15,9 +15,11 @@ const loadSettings = async (req) => {
 router.get('/', async (req, res) => {
 	try {
 		const query = 'name' in req.query ? req.query.name : ''
-		const apps = await db.loadApps(query).catch(e => { throw e })
+		const namespace = 'namespace' in req.query ? req.query.namespace : null
+		let apps = await db.loadApps(query).catch(e => { throw e })
 		let ipsTotal = 0
 		if (Array.isArray(apps)) {
+			if (namespace !== null) { apps = apps.filter(app => app.getNamespace() === namespace) }
 			ipsTotal = apps.map(app => app.getIps().length).reduce((a, b) => a + b, 0)
 		} else {
 			ipsTotal = apps.getIps().length
