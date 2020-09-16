@@ -97,6 +97,42 @@ describe('Testing API App handles', () => {
 					res.body.status.should.be.eql('OK')
 				})
 		})
+		it('Get apps by namespace', async () => {
+			let appObj = {
+				name: 'testserver8',
+				namespace: 'testando100',
+				desc: 'Testando salvar um app inteiro',
+				ips: [
+					'172.2.0.0:8000',
+					'172.2.0.1:8000'
+				]
+			}
+			let appOb = App.createApp(appObj)
+			await db.addObjApp(appOb)
+			appObj = {
+				name: 'testserver15',
+				namespace: 'testando101',
+				desc: 'Testando salvar um app inteiro',
+				ips: [
+					'172.2.0.0:8000',
+					'172.2.0.1:8000'
+				]
+			}
+			appOb = App.createApp(appObj)
+			await db.addObjApp(appOb)
+			chai.request(app)
+				.get('/app?namespace=testando101')
+				.set('Content-Type', 'application/json')
+				.auth('bot', 'bot')
+				.end((err, res) => {
+					res.should.have.status(200)
+					res.body.should.be.a('object')
+					res.body.should.have.property('status')
+					res.body.status.should.be.eql('OK')
+					res.body.should.have.property('length')
+					res.body.length.should.be.eql(1)
+				})
+		})
 		it('Should not add a full app using invalid auth', async () => {
 			const appObj = {
 				name: 'testserver7',
@@ -235,5 +271,5 @@ describe('Testing API App handles', () => {
 					res.body.status.should.be.eql('Error')
 				})
 		})
-	})
+	})	
 })
