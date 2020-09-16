@@ -131,7 +131,7 @@ export default class App {
 		if (this._namespace) {
 			return this._namespace
 		}
-		if (settings.getNamespace()) {
+		if (settings && settings.getNamespace()) {
 			return settings.getNamespace()
 		}
 		return 'default'
